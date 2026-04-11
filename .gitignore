@@ -1,0 +1,35 @@
+# Dependencies
+career-ops/node_modules/
+
+# === PERSONDATA (PII) ===
+
+# Personal config (phone, email, salary)
+career-ops/config/profile.yml
+
+# Context file (personnummer, fullständig historik)
+career-ops/johan_kontext_claude_code.md
+
+# CV-filer (alla format)
+career-ops/cv.md
+*.pdf
+
+# Generated output (CV:n, personliga brev)
+career-ops/output/
+
+# Utvärderingsrapporter med kontaktuppgifter
+career-ops/reports/
+
+# HTML-rapporter med persondata (002-004 innehåller telefon/email)
+002-*.html
+003-*.html
+004-*.html
+
+# === ÖVRIGT ===
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.*

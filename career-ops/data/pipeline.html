@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pipeline — Johan Kullendorff</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface-hover: #232736;
+    --border: #2a2e3d;
+    --text: #e1e4ed;
+    --text-dim: #8b90a0;
+    --accent: #6c9cff;
+    --accent-dim: #4a7ae0;
+    --green: #4ade80;
+    --orange: #fbbf24;
+    --red: #f87171;
+    --purple: #c084fc;
+    --tag-tech-bg: #1e3a5f;
+    --tag-tech-text: #6cb4ff;
+    --tag-komm-bg: #3b2460;
+    --tag-komm-text: #c084fc;
+    --tag-gbg-bg: #1a3a2a;
+    --tag-gbg-text: #4ade80;
+    --tag-remote-bg: #3a3020;
+    --tag-remote-text: #fbbf24;
+    --tag-urgent-bg: #4a1c1c;
+    --tag-urgent-text: #f87171;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.25rem;
+  }
+
+  .subtitle {
+    color: var(--text-dim);
+    font-size: 0.95rem;
+  }
+
+  .stats {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  .stat .num {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text);
+  }
+
+  .filters {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    padding: 0.4rem 0.9rem;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 0.82rem;
+    transition: all 0.15s;
+  }
+
+  .filter-btn:hover { border-color: var(--accent); color: var(--text); }
+  .filter-btn.active { background: var(--accent-dim); color: white; border-color: var(--accent); }
+
+  .section-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    margin: 1.5rem 0 0.75rem;
+  }
+
+  .job-list { list-style: none; }
+
+  .job {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.85rem 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    margin-bottom: 0.5rem;
+    background: var(--surface);
+    transition: all 0.15s;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .job:hover {
+    background: var(--surface-hover);
+    border-color: var(--accent);
+    transform: translateX(2px);
+  }
+
+  .job-info { flex: 1; min-width: 0; }
+
+  .job-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .job-company {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+  }
+
+  .tags {
+    display: flex;
+    gap: 0.35rem;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .tag {
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .tag-tech { background: var(--tag-tech-bg); color: var(--tag-tech-text); }
+  .tag-komm { background: var(--tag-komm-bg); color: var(--tag-komm-text); }
+  .tag-gbg { background: var(--tag-gbg-bg); color: var(--tag-gbg-text); }
+  .tag-remote { background: var(--tag-remote-bg); color: var(--tag-remote-text); }
+  .tag-urgent { background: var(--tag-urgent-bg); color: var(--tag-urgent-text); }
+
+  .arrow {
+    color: var(--text-dim);
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    transition: color 0.15s;
+  }
+  .job:hover .arrow { color: var(--accent); }
+
+  footer {
+    margin-top: 2.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 0.8rem;
+  }
+
+  @media (max-width: 640px) {
+    body { padding: 1rem; }
+    .job { flex-wrap: wrap; gap: 0.5rem; }
+    .tags { justify-content: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Jobbpipeline</h1>
+  <div class="subtitle">Johan Kullendorff &mdash; Skannad 2026-04-09</div>
+  <div class="stats">
+    <div class="stat"><span class="num">27</span> jobb i pipeline</div>
+    <div class="stat"><span class="num">8</span> Goteborg</div>
+    <div class="stat"><span class="num">11</span> Remote/EMEA</div>
+    <div class="stat"><span class="num">8</span> Kommunikation</div>
+  </div>
+</header>
+
+<div class="filters">
+  <button class="filter-btn active" onclick="filterJobs('all')">Alla (27)</button>
+  <button class="filter-btn" onclick="filterJobs('gbg')">Goteborg (8)</button>
+  <button class="filter-btn" onclick="filterJobs('remote')">Remote (11)</button>
+  <button class="filter-btn" onclick="filterJobs('komm')">Kommunikation (8)</button>
+  <button class="filter-btn" onclick="filterJobs('urgent')">Brattom!</button>
+</div>
+
+<div class="section-label">Brattom &mdash; deadline snart</div>
+<ul class="job-list">
+  <a href="https://opera.varbi.com/en/what:job/jobID:913486" target="_blank" class="job" data-tags="komm gbg urgent">
+    <div class="job-info">
+      <div class="job-title">Vikarierande press- och PR-kommunikator</div>
+      <div class="job-company">GoteborgsOperan &mdash; Deadline 12 april</div>
+    </div>
+    <div class="tags">
+      <span class="tag tag-urgent">DEADLINE 12/4</span>
+      <span class="tag tag-komm">Kommunikation</span>
+      <span class="tag tag-gbg">Goteborg</span>
+    </div>
+    <span class="arrow">&rarr;</span>
+  </a>
+  <a href="https://lansstyrelsen.varbi.com/en/what:job/jobID:921067" target="_blank" class="job" data-tags="komm gbg urgent">
+    <div class="job-info">
+      <div class="job-title">Strategisk kommunikator</div>
+      <div class="job-company">Lansstyrelsen Vastra Gotaland &mdash; Deadline 20 april</div>
+    </div>
+    <div class="tags">
+      <span class="tag tag-urgent">DEADLINE 20/4</span>
+      <span class="tag tag-komm">Kommunikation</span>
+      <span class="tag tag-gbg">Goteborg</span>
+    </div>
+    <span class="arrow">&rarr;</span>
+  </a>
+</ul>
+
+<div class="section-label">Goteborg &mdash; Tech/Support/IT</div>
+<ul class="job-list">
+  <a href="https://to.indeed.com/aa2z8d2j92wx" target="_blank" class="job" data-tags="tech gbg">
+    <div class="job-info">
+      <div class="job-title">Junior Supporttekniker</div>
+      <div class="job-company">Friday Vast AB</div>
+    </div>
+    <div class="tags"><span class="tag tag-tech">Support</span><span class="tag tag-gbg">Goteborg</span></div>
+    <span class="arrow">&rarr;</span>
+  </a>
+  <a href="https://to.indeed.com/aaprxcd6wjdn" target="_blank" class="job" data-tags="tech gbg">
+    <div class="job-info">
+      <div class="job-title">IT-supporttekniker Onsite</div>
+      <div class="job-company">Techfactory</div>
+    </div>
+    <div class="tags"><span class="tag tag-tech">IT Support</span><span class="tag tag-gbg">Goteborg</span></div>
+    <span class="arrow">&rarr;</span>
+  </a>
+  <a href="https://to.indeed.com/aatgj88gbnsh" target="_blank" class="job" data-tags="tech gbg">
+    <div class="job-info">
+      <div class="job-title">IT-tekniker Trafikverket</div>
+      <div class="job-company">Experis</div>
+    </div>
+    <div class="tags"><span class="tag tag-tech">IT</span><span class="tag tag-gbg">Goteborg</span></div>
+    <span class="arrow">&rarr;</span>
+  </a>
+  <a href="https://to.indeed.com/aaq77bh2vd4d" target="_blank" class="job" data-tags="tech gbg">
+    <div class="job-info">
+      <div class="job-title">Servicedesk-tekniker inom IT</div>
+      <div class="job-company">Experis</div>
+    </div>
+    <div class="tags"><span class="tag tag-tech">Service Desk</span><span class="tag tag-gbg">Goteborg</span></div>
+    <span class="arrow">&rarr;</span>
+  </a>
+  <a href="https://to.indeed.com/aaj76jyksvqj" target="_blank" class="job" data-tags="tech gbg">
+    <div class="job-info">
+      <div class="job-title">Customer Support Specialist</div>
+      <div class="job-company">CarbonCloud &mdash; SaaS, nypostat 7 april</div>
+    </div>
+    <div class="tags"><span class="tag tag-tech">Support</span><span class="tag tag-gbg">Goteborg</span></div>
+    <span class="arrow">&rarr;</span>
+  </a>
+  <a href="https://to.indeed.com/aaw9wlb8swcy" target="_blank" class="job" data-tags="tech gbg">
+    <div class="job-info">
+      <div class="job-title">Operativ Team Lead IT Service Desk</div>
+      <div class="job-company">Linden-IT</div>
+    </div>
+    <div class="tags"><span class="tag tag-tech">Lead</span><span class="tag tag-gbg">Goteborg</span></div>
+    <span class="arrow">&rarr;</span>
+  </a>
+  <a href="https://to.indeed.com/aa6bm87fb46v" target="_blank" class="job" data-tags="tech gbg">
+    <div class="job-info">
+      <div class="job-title">Technical Services Specialist</div>
+      <div class="job-company">Johnson Controls &mdash; Molndal</div>
+    </div>
+    <div class="tags"><span class="tag tag-tech">Tech</span><span class="tag tag-gbg">Goteborg</span></div>
+    <span class="arrow">&rarr;</span>
+  </a>
+  <a href="https://to.indeed.com/aam8hn4629s4" target="_blank" class="job" data-tags="tech gbg">
+    <div class="job-info">
+      <div class="job-title">EDI / Integration Developer</div>
+      <div class="job-company">Hultafors Group</div>
+    </div>
+    <div class="tags"><span class="tag tag-tech">Dev</span><span class="tag tag-gbg">Goteborg</span></div>
+    <span class="arrow">&rarr;</span>
+  </a>
+</ul>
+
+<div class="section-label">Goteborg &mdash; Kommunikation/Content</div>
+<ul class="job-list">
+  <a href="https://to.indeed.com/aavfq9lytyw4" target="_blank" class="job" data-tags="komm gbg">
+    <div class="job-info">
+      <div class="job-title">Kommunikator till Arbetsmarknad och Vuxenutbildning</div>
+      <div class="job-company">Goteborgs Stad</div>
+    </div>
+    <div class="tags"><span class="tag tag-komm">Kommunikation</span><span class="tag tag-gbg">Goteborg</span></div>
+    <span class="arrow">&rarr;</span>
+  </a>
+  <a href="https://to.indeed.com/aa8y9r98lgkc" target="_blank" class="job" data-tags="komm gbg">
+    <div class="job-info">
+      <div class="job-title">Webbredaktor / Sprakvardare</div>
+      <div class="job-company">Lansstyrelsen Vastra Gotaland</div>
+    </div>
+    <div class="tags"><span class="tag tag-komm">Webb</span><span class="tag tag-gbg">Goteborg</span></div>
+    <span class="arrow">&rarr;</span>
+  </a>
+  <a href="https://to.indeed.com/aarvfjpr6tvg" target="_blank" class="job" data-tags="komm gbg">
+    <div class="job-info">
+      <div class="job-title">Marknadskommunikator</div>
+      <div class="job-company">Frico AB</div>
+    </div>
+    <div class="tags"><span class="tag tag-komm">Marknad</span><span class="tag tag-gbg">Goteborg</span></div>
+    <span class="arrow">&rarr;</span>
+  </a>
+  <a href="https://to.indeed.com/aa7tmf9m9z8q" target="_blank" class="job" data-tags="komm gbg tech">
+    <div class="job-info">
+      <div class="job-title">Teknikinformator med teknisk bakgrund</div>
+      <div class="job-company">AFRY &mdash; Perfekt hybrid tech + skrivande</div>
+    </div>
+    <div class="tags"><span class="tag tag-komm">Teknikinfo</span><span class="tag tag-tech">Tech</span><span class="tag tag-gbg">Goteborg</span></div>
+    <span class="arrow">&rarr;</span>
+  </a>
+  <a href="https://to.indeed.com/aahvlyp8zct2" target="_blank" class="job" data-tags="komm gbg">
+    <div class="job-info">
+      <div class="job-title">Marketing & Content Manager</div>
+      <div class="job-company">Outnorth AB</div>
+    </div>
+    <div class="tags"><span class="tag tag-komm">Content</span><span class="tag tag-gbg">Goteborg</span></div>
+    <span class="arrow">&rarr;</span>
+  </a>
+  <a href="https://to.indeed.com/aacb9p4lljyx" target="_blank" class="job" data-tags="komm gbg">
+    <div class="job-info">
+      <div class="job-title">Content Creator & Creative Account Manager</div>
+      <div class="job-company">InReach Marketing AB</div>
+    </div>
+    <div class="tags"><span class="tag tag-komm">Content</span><span class="tag tag-gbg">Goteborg</span></div>
+    <span class="arrow">&rarr;</span>
+  </a>
+</ul>
+
+<div class="section-label">Remote / EMEA &mdash; Tech/Support</div>
+<ul class="job-list">
+  <a href="https://jobs.ashbyhq.com/horizon3ai/eaf4c475-fe44-45ef-b35a-9eee3795984b" target="_blank" class="job" data-tags="tech remote">
+    <div class="job-info">
+      <div class="job-title">Technical Support Engineer, EMEA (Python!)</div>
+      <div class="job-company">Horizon3 AI &mdash; Kraver Python, extra relevant</div>
+    </div>
+    <div class="tags"><span class="tag tag-tech">Python</span><span class="tag tag-remote">Remote</span></div>
+    <span class="arrow">&rarr;</span>
+  </a>
+  <a href="https://jobs.ashbyhq.com/zapier/b5f9461d-1a4e-456b-8cfd-bc88ee4cb7da" target="_blank" class="job" data-tags="tech remote">
+    <div class="job-info">
+      <div class="job-title">Support Systems Engineer</div>
+      <div class="job-company">Zapier &mdash; Bygga verktyg, inte bara support</div>
+    </div>
+    <div class="tags"><span class="tag tag-tech">Automation</span><span class="tag tag-remote">Remote</span></div>
+    <span class="arrow">&rarr;</span>
+  </a>
+  <a href="https://jobs.ashbyhq.com/n8n/1d732234-b364-4c5c-b4fd-ae584e0b7992" target="_blank" class="job" data-tags="tech remote">
+    <div class="job-info">
+      <div class="job-title">Senior Support Engineer - Europe Remote</div>
+      <div class="job-company">n8n &mdash; Workflow automation</div>
+    </div>
+    <div class="tags"><span class="tag tag-tech">Automation</span><span class="tag tag-remote">Remote EU</span></div>
+    <span class="arrow">&rarr;</span>
+  </a>
+  <a href="https://jobs.ashbyhq.com/zapier/83ae6284-4103-42e4-b3e5-500f314ed4cb" target="_blank" class="job" data-tags="tech remote">
+    <div class="job-info">
+      <div class="job-title">Technical Support Specialist</div>
+      <div class="job-company">Zapier</div>
+    </div>
+    <div class="tags"><span class="tag tag-tech">Support</span><span class="tag tag-remote">Remote</span></div>
+    <span class="arrow">&rarr;</span>
+  </a>
+  <a href="https://www.atlassian.com/company/careers/details/16088" target="_blank" class="job" data-tags="tech remote">
+    <div class="job-info">
+      <div class="job-title">Cloud Technical Support Engineer, EMEA</div>
+      <div class="job-company">Atlassian</div>
+    </div>
+    <div class="tags"><span class="tag tag-tech">Cloud</span><span class="tag tag-remote">EMEA</span></div>
+    <span class="arrow">&rarr;</span>
+  </a>
+  <a href="https://www.atlassian.com/company/careers/details/24362" target="_blank" class="job" data-tags="tech remote">
+    <div class="job-info">
+      <div class="job-title">Technical Support Engineer</div>
+      <div class="job-company">Atlassian</div>
+    </div>
+    <div class="tags"><span class="tag tag-tech">Support</span><span class="tag tag-remote">EMEA</span></div>
+    <span class="arrow">&rarr;</span>
+  </a>
+  <a href="https://retool.com/careers/support-engineer-emea--support--london-united-kingdom" target="_blank" class="job" data-tags="tech remote">
+    <div class="job-info">
+      <div class="job-title">Support Engineer, EMEA</div>
+      <div class="job-company">Retool</div>
+    </div>
+    <div class="tags"><span class="tag tag-tech">Support</span><span class="tag tag-remote">EMEA</span></div>
+    <span class="arrow">&rarr;</span>
+  </a>
+  <a href="https://apply.workable.com/hospitable/j/BE9898AAF6/" target="_blank" class="job" data-tags="tech remote">
+    <div class="job-info">
+      <div class="job-title">Technical Support Engineer (EMEA Remote)</div>
+      <div class="job-company">Hospitable</div>
+    </div>
+    <div class="tags"><span class="tag tag-tech">Support</span><span class="tag tag-remote">Remote</span></div>
+    <span class="arrow">&rarr;</span>
+  </a>
+  <a href="https://jobs.lever.co/remofirst/3a5e493c-ee57-42c3-ba89-39cf45c303d0" target="_blank" class="job" data-tags="tech remote">
+    <div class="job-info">
+      <div class="job-title">Support Specialist EMEA</div>
+      <div class="job-company">RemoFirst</div>
+    </div>
+    <div class="tags"><span class="tag tag-tech">Support</span><span class="tag tag-remote">Remote</span></div>
+    <span class="arrow">&rarr;</span>
+  </a>
+  <a href="https://jobs.lever.co/swapcard/850371ee-2ed5-49be-ba53-29f6538bd8ba" target="_blank" class="job" data-tags="tech remote">
+    <div class="job-info">
+      <div class="job-title">Customer Support Specialist EMEA</div>
+      <div class="job-company">Swapcard</div>
+    </div>
+    <div class="tags"><span class="tag tag-tech">Support</span><span class="tag tag-remote">Remote</span></div>
+    <span class="arrow">&rarr;</span>
+  </a>
+  <a href="https://jobs.lever.co/wingtra-2/118c65ff-1b95-49e5-8226-661fbfc9f196" target="_blank" class="job" data-tags="tech remote">
+    <div class="job-info">
+      <div class="job-title">Junior Technical Support Specialist EMEA</div>
+      <div class="job-company">Wingtra</div>
+    </div>
+    <div class="tags"><span class="tag tag-tech">Junior</span><span class="tag tag-remote">EMEA</span></div>
+    <span class="arrow">&rarr;</span>
+  </a>
+</ul>
+
+<footer>
+  Genererad av career-ops &mdash; 2026-04-09 &mdash; Klicka pa ett jobb for att oppna annonsen
+</footer>
+
+<script>
+function filterJobs(tag) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+
+  document.querySelectorAll('.job').forEach(job => {
+    if (tag === 'all') {
+      job.style.display = '';
+    } else {
+      const tags = job.dataset.tags || '';
+      job.style.display = tags.includes(tag) ? '' : 'none';
+    }
+  });
+
+  document.querySelectorAll('.section-label').forEach(label => {
+    const section = label.nextElementSibling;
+    if (!section) return;
+    const visibleJobs = section.querySelectorAll('.job:not([style*="display: none"])');
+    label.style.display = visibleJobs.length > 0 ? '' : 'none';
+  });
+}
+</script>
+
+</body>
+</html>

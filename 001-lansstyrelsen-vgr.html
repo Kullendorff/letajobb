@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>001 — Länsstyrelsen VGR — Strategisk kommunikatör</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #222635;
+    --border: #2a2e3d;
+    --text: #e1e4ed;
+    --text-dim: #8b90a0;
+    --text-bright: #f0f2f8;
+    --accent: #6c9cff;
+    --green: #4ade80;
+    --orange: #fbbf24;
+    --red: #f87171;
+    --purple: #c084fc;
+    --cyan: #22d3ee;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg); color: var(--text);
+    line-height: 1.65; padding: 2rem; max-width: 900px; margin: 0 auto;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* Header */
+  .header { margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+  .header h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.02em; color: var(--text-bright); }
+  .meta { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-dim); }
+  .meta-item { display: flex; align-items: center; gap: 0.3rem; }
+
+  .score-badge {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    background: linear-gradient(135deg, #1e3a5f, #2a1e5f); border: 1px solid var(--accent);
+    padding: 0.3rem 0.8rem; border-radius: 6px; font-weight: 700; font-size: 1.1rem; color: var(--accent);
+  }
+
+  /* Sections */
+  .section { margin-bottom: 2rem; }
+  .section h2 {
+    font-size: 1.1rem; font-weight: 700; color: var(--cyan);
+    border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; margin-bottom: 1rem;
+    letter-spacing: 0.02em;
+  }
+  .section h3 { font-size: 0.95rem; font-weight: 600; color: var(--text-bright); margin: 1.2rem 0 0.6rem; }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; margin: 0.75rem 0; font-size: 0.85rem; }
+  th { text-align: left; padding: 0.5rem 0.75rem; background: var(--surface2); color: var(--text-dim);
+       font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); }
+  td { padding: 0.55rem 0.75rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:hover td { background: var(--surface); }
+
+  /* Strength badges */
+  .stark { color: var(--green); font-weight: 600; }
+  .delvis { color: var(--orange); font-weight: 600; }
+  .svag { color: var(--red); font-weight: 600; }
+
+  /* Cards */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem; margin: 0.75rem 0; }
+  .card-title { font-weight: 600; color: var(--text-bright); margin-bottom: 0.5rem; }
+  .card-dim { color: var(--text-dim); font-size: 0.82rem; }
+
+  /* STAR stories */
+  .star { background: var(--surface); border-left: 3px solid var(--purple); padding: 1rem 1.2rem; margin: 0.75rem 0; border-radius: 0 6px 6px 0; }
+  .star-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--purple); margin-bottom: 0.3rem; }
+
+  /* Letter */
+  .letter { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin: 1rem 0; font-size: 0.9rem; line-height: 1.75; }
+  .letter p { margin-bottom: 0.8rem; }
+
+  /* Score breakdown */
+  .score-row { display: flex; align-items: center; gap: 0.75rem; margin: 0.4rem 0; }
+  .score-label { width: 160px; font-size: 0.82rem; color: var(--text-dim); }
+  .score-bar-bg { flex: 1; height: 8px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+  .score-bar { height: 100%; border-radius: 4px; transition: width 0.3s; }
+  .score-val { width: 45px; text-align: right; font-size: 0.82rem; font-weight: 600; }
+
+  /* Keywords */
+  .kw-grid { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .kw { padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 500;
+        background: #1e3a5f; color: #6cb4ff; border: 1px solid #2a4a7f; }
+
+  /* Red flag Q&A */
+  .qa { margin: 0.75rem 0; }
+  .qa-q { font-weight: 600; color: var(--orange); font-size: 0.88rem; margin-bottom: 0.3rem; }
+  .qa-a { color: var(--text); font-size: 0.85rem; padding-left: 1rem; border-left: 2px solid var(--border); }
+
+  footer { margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--border); color: var(--text-dim); font-size: 0.78rem; }
+
+  /* Collapsibles */
+  details { margin: 0.5rem 0; }
+  summary { cursor: pointer; font-weight: 600; color: var(--text-bright); padding: 0.4rem 0; font-size: 0.92rem; }
+  summary:hover { color: var(--accent); }
+  details[open] summary { margin-bottom: 0.5rem; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Lansstyrelsen Vastra Gotaland &mdash; Strategisk kommunikator</h1>
+  <div class="meta">
+    <div class="meta-item"><span class="score-badge">3.8 / 5</span></div>
+    <div class="meta-item">2026-04-09</div>
+    <div class="meta-item">Deadline: 20 april</div>
+    <div class="meta-item"><a href="https://lansstyrelsen.varbi.com/en/what:job/jobID:921067">Annons &rarr;</a></div>
+    <div class="meta-item">Kommunikator + Hybrid tech</div>
+  </div>
+</div>
+
+<!-- A) ROLLSAMMANFATTNING -->
+<div class="section">
+  <h2>A) Sammanfattning av rollen</h2>
+  <table>
+    <tr><td style="width:140px;color:var(--text-dim)">Arketyp</td><td>Kommunikator / Redaktor / Content + Hybrid tech + kommunikation</td></tr>
+    <tr><td style="color:var(--text-dim)">Doman</td><td>Offentlig forvaltning / Statlig myndighet</td></tr>
+    <tr><td style="color:var(--text-dim)">Funktion</td><td>Strategisk kommunikation, innehallsproduktion, radgivning</td></tr>
+    <tr><td style="color:var(--text-dim)">Senioritet</td><td>Mid-senior ("flera ars erfarenhet")</td></tr>
+    <tr><td style="color:var(--text-dim)">Remote</td><td>Hybrid (distans mojligt, kontor i Goteborg)</td></tr>
+    <tr><td style="color:var(--text-dim)">TL;DR</td><td>Strategisk kommunikator som analyserar, utvecklar och producerar kommunikation &mdash; sarskilt forandrings-/kriskommunikation samt digital transformation och AI.</td></tr>
+  </table>
+</div>
+
+<!-- SCORE BREAKDOWN -->
+<div class="section">
+  <h2>Scorecard</h2>
+  <div class="score-row"><span class="score-label">CV-match</span><div class="score-bar-bg"><div class="score-bar" style="width:70%;background:var(--orange)"></div></div><span class="score-val" style="color:var(--orange)">3.5</span></div>
+  <div class="score-row"><span class="score-label">North Star</span><div class="score-bar-bg"><div class="score-bar" style="width:70%;background:var(--orange)"></div></div><span class="score-val" style="color:var(--orange)">3.5</span></div>
+  <div class="score-row"><span class="score-label">Kompensation</span><div class="score-bar-bg"><div class="score-bar" style="width:80%;background:var(--green)"></div></div><span class="score-val" style="color:var(--green)">4.0</span></div>
+  <div class="score-row"><span class="score-label">Kulturella signaler</span><div class="score-bar-bg"><div class="score-bar" style="width:80%;background:var(--green)"></div></div><span class="score-val" style="color:var(--green)">4.0</span></div>
+  <div class="score-row"><span class="score-label">Rod flagg</span><div class="score-bar-bg"><div class="score-bar" style="width:80%;background:var(--green)"></div></div><span class="score-val" style="color:var(--green)">4.0</span></div>
+  <div class="score-row"><span class="score-label"><strong>Global</strong></span><div class="score-bar-bg"><div class="score-bar" style="width:76%;background:var(--accent)"></div></div><span class="score-val" style="color:var(--accent)"><strong>3.8</strong></span></div>
+</div>
+
+<!-- B) MATCH -->
+<div class="section">
+  <h2>B) Match med CV</h2>
+  <table>
+    <thead><tr><th>#</th><th>Krav</th><th>Johans matchning</th><th>Styrka</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Hogskoleexamen kommunikation/journalistik</td><td>Kandidat JMG, Goteborgs Universitet</td><td class="stark">STARK</td></tr>
+      <tr><td>2</td><td>Flera ars strategisk kommunikation</td><td>6+ ar journalist/redigerare. Inte renodlad strategisk, men innehallsstrategi + intern kommunikation Concentrix</td><td class="delvis">DELVIS</td></tr>
+      <tr><td>3</td><td>Flytande svenska</td><td>Modersmalstalare</td><td class="stark">STARK</td></tr>
+      <tr><td>4</td><td>God engelska</td><td>Flytande i tal och skrift</td><td class="stark">STARK</td></tr>
+      <tr><td>5</td><td>Mycket god skrivformaga</td><td>6+ ar journalist, dagligt skrivande</td><td class="stark">STARK</td></tr>
+      <tr><td>6</td><td>Budskap, malgrupp, kanal, tajming</td><td>Journalistutbildning + daglig redaktorsroll</td><td class="stark">STARK</td></tr>
+      <tr><td>7</td><td>Sjalvstandig innehallsproduktion</td><td>Digital + tidning + kunskapsartiklar</td><td class="stark">STARK</td></tr>
+      <tr><td>8</td><td>Strukturerat under press</td><td>13 dagstidningar, IT-haveri, Apple-incidenter</td><td class="stark">STARK</td></tr>
+      <tr><td>9</td><td>Press/kriskommunikation</td><td>Journalist + Hall Media IT-kris. Ej formell kriskommunikator</td><td class="delvis">DELVIS</td></tr>
+      <tr><td>10</td><td>Generativ AI i kommunikation (merit)</td><td>Byggt appar med ChatGPT, Claude, Gemini. Djup praktisk AI-kunskap</td><td class="stark">STARK</td></tr>
+      <tr><td>11</td><td>Fortroendeskapande i moten (merit)</td><td>Lokaljournalistik med myndigheter. Stakeholder-hantering Concentrix</td><td class="delvis">DELVIS</td></tr>
+      <tr><td>12</td><td>Analysera kommunikationsinsatser</td><td>Processanalys Concentrix, analytisk metod JMG</td><td class="delvis">DELVIS</td></tr>
+      <tr><td>13</td><td>Organisations-/forandringskommunikation</td><td>Samordning 13 redaktioner (Hall Media), dokumentation och processarbete (Concentrix)</td><td class="svag">SVAG</td></tr>
+      <tr><td>14</td><td>Radgivning till chefer</td><td>Vagledning forstalinje Concentrix. Ej formellt till ledning</td><td class="delvis">DELVIS</td></tr>
+      <tr><td>15</td><td>Omvarldbevakning</td><td>Journalistbakgrund = stark omvarldbevakning</td><td class="delvis">DELVIS</td></tr>
+      <tr><td>16</td><td>Digital transformation och AI</td><td>AI-projekt, Python-automation, LLM-integration</td><td class="stark">STARK</td></tr>
+      <tr><td>17</td><td>Statlig vardegrund</td><td>Journalistisk yrkesetik + myndighetskontakter</td><td class="delvis">DELVIS</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Gap-analys</h3>
+  <div class="card">
+    <div class="card-title" style="color:var(--red)">Strategisk kommunikation (organisatorisk) &mdash; HOGT</div>
+    <p style="font-size:0.85rem">Journalistisk kommunikation, inte formell strategisk/organisatorisk. <strong>Mitigering:</strong> Framställ journalistiken som strategisk &mdash; budskap, målgrupp, kanal, tajming är exakt vad redaktörer gör dagligen.</p>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--orange)">Forandringskommunikation &mdash; MEDEL</div>
+    <p style="font-size:0.85rem">Ingen formell erfarenhet. <strong>Mitigering:</strong> Hall Media-krisen visar förändringsarbete i praktiken: identifierade problem, byggde lösning, fick adoption hos 13 redaktioner.</p>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--orange)">Formell kriskommunikation &mdash; MEDEL</div>
+    <p style="font-size:0.85rem"><strong>Mitigering:</strong> Hall Media IT-haveriet = praktisk krishantering. 13 tidningar stod stilla, byggde backup, skapade guider, koordinerade. Raddade produktionen.</p>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--text-dim)">Myndighetserfarenhet &mdash; LAGT</div>
+    <p style="font-size:0.85rem">Ej explicit krav. <strong>Mitigering:</strong> Journalist med daglig myndighetskontakt ger forstaelse for offentlig verksamhet.</p>
+  </div>
+</div>
+
+<!-- C) NIVA & STRATEGI -->
+<div class="section">
+  <h2>C) Niva och strategi</h2>
+  <div class="card">
+    <div class="card-title">Huvudnarrativ</div>
+    <p style="font-size:0.92rem;color:var(--accent)">"Journalist som blev tekniker som vill tillbaka till kommunikation &mdash; men med helt ny verktygslada"</p>
+  </div>
+  <h3>Nyckelformuleringar</h3>
+  <ul style="font-size:0.88rem;padding-left:1.2rem;margin:0.5rem 0">
+    <li>"Sex ars erfarenhet av professionell kommunikation i redaktionell miljo &mdash; budskap, malgrupp, kanal och tajming var mitt dagliga arbete"</li>
+    <li>"Min tekniska erfarenhet ger mig en unik forstaelse for digital transformation som andra kommunikatorer saknar &mdash; jag bygger verktygen, inte bara anvander dem"</li>
+    <li>"Min tekniska erfarenhet ger mig en förståelse för digital transformation som andra kommunikatörer saknar"</li>
+  </ul>
+  <h3>Lonelage</h3>
+  <table>
+    <tr><td style="color:var(--text-dim)">Statlig median kommunikator</td><td>~47 000 kr/man</td></tr>
+    <tr><td style="color:var(--text-dim)">Johans target</td><td>38 000 &ndash; 48 000 kr/man</td></tr>
+    <tr><td style="color:var(--text-dim)">Bedomning</td><td>Realistiskt. Startlon troligtvis 38&ndash;42k, men AI-kompetens kan motivera hogre</td></tr>
+  </table>
+</div>
+
+<!-- F) STAR STORIES -->
+<div class="section">
+  <h2>F) Intervjuforeberedelse &mdash; STAR+R</h2>
+
+  <details open>
+    <summary>1. Hall Media IT-krisen &mdash; Kriskommunikation</summary>
+    <div class="star">
+      <div class="star-label">Situation</div>
+      <p style="font-size:0.85rem">Hall Media, 2017. Centralt IT-system kraschade, blockerade materialfloden fran 13 lokalredaktioner. Samtliga dagstidningar riskerade att missa deadline.</p>
+      <div class="star-label" style="margin-top:0.6rem">Task</div>
+      <p style="font-size:0.85rem">Utan formellt IT-ansvar behovde jag hitta en losning och kommunicera den till 13 redaktioner.</p>
+      <div class="star-label" style="margin-top:0.6rem">Action</div>
+      <p style="font-size:0.85rem">Byggde FTP-baserat backup-system, skapade anvandarduider, kontaktade varje redaktion, koordinerade overgangen under extremt tidspress.</p>
+      <div class="star-label" style="margin-top:0.6rem">Result</div>
+      <p style="font-size:0.85rem">Raddade produktionen fran 4+ timmars forsening. Losningen blev permanent beredskapsprocess.</p>
+      <div class="star-label" style="margin-top:0.6rem">Reflection</div>
+      <p style="font-size:0.85rem;color:var(--purple)">Kriskommunikation handlar om att forst losa, sedan kommunicera sa alla forstar och kan agera. Teknisk kompetens var nodvandig, men kommunikationen gjorde att det fungerade.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>2. Dokumentation &amp; kunskapsartiklar &mdash; Intern kommunikation</summary>
+    <div class="star">
+      <div class="star-label">Situation</div>
+      <p style="font-size:0.85rem">På Concentrix saknade förstalinjen tydlig dokumentation för komplexa problemtyper.</p>
+      <div class="star-label" style="margin-top:0.6rem">Action</div>
+      <p style="font-size:0.85rem">Skrev kunskapsartiklar målgruppsanpassade för förstalinjeagenter: tydligt språk, steg-för-steg, med kontext för varför varje steg behövdes. Journalistisk metod: vem läser detta, vad behöver de veta?</p>
+      <div class="star-label" style="margin-top:0.6rem">Result</div>
+      <p style="font-size:0.85rem">Artiklarna används aktivt och minskade eskalering.</p>
+      <div class="star-label" style="margin-top:0.6rem">Reflection</div>
+      <p style="font-size:0.85rem;color:var(--purple)">Intern kommunikation är innehållsproduktion med målgruppen "kollegor". Samma principer: klart språk, rätt nivå, rätt format.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>3. Dagstidningsredigering &mdash; Budskap, malgrupp, kanal</summary>
+    <div class="star">
+      <div class="star-label">Kopplar till</div>
+      <p style="font-size:0.85rem">Krav pa "forstaelse for budskap, malgrupp, kanal och tajming"</p>
+      <div class="star-label" style="margin-top:0.6rem">Poang</div>
+      <p style="font-size:0.85rem">Tusentals publiceringsbeslut pa Hallpressen. Samma grundlogik som strategisk kommunikation &mdash; ratt budskap, ratt malgrupp, ratt kanal, ratt tajming. Skillnaden ar skalan, inte tankesattet.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>4. AI Multi-Query Tool &mdash; Generativ AI i kommunikation</summary>
+    <div class="star">
+      <div class="star-label">Kopplar till</div>
+      <p style="font-size:0.85rem">Meriterande: "erfarenhet av generativ AI i kommunikationsarbete"</p>
+      <div class="star-label" style="margin-top:0.6rem">Poang</div>
+      <p style="font-size:0.85rem">Byggde Flask-app som jemfor svar fran ChatGPT, Claude och Gemini. Djup forstaelse for AI-modellers styrkor och begransningar &mdash; direkt overforbrt till kommunikationsarbete. Kan radgiva kollegor om effektiv och ansvarsfull AI-anvandning.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>5. Myndighetskontakter som journalist</summary>
+    <div class="star">
+      <div class="star-label">Poang</div>
+      <p style="font-size:0.85rem">Daglig kontakt med kommunala och statliga foretradare. Fortroendeskapande kommunikation fran "andra sidan" &mdash; nu vill gora det inifraan. Perspektivet ger unik forstaelse for vad som fungerar i myndighetskommunikation.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>6. Dokumentation &amp; kunskapsartiklar &mdash; Intern kommunikation</summary>
+    <div class="star">
+      <div class="star-label">Poang</div>
+      <p style="font-size:0.85rem">Skrev kunskapsartiklar pa Concentrix som forstalinjen faktiskt anvande. Journalistisk metod: "vem laser detta, vad behover de veta, i vilken ordning?" Intern kommunikation = innehallsproduktion med malgruppen "kollegor".</p>
+    </div>
+  </details>
+</div>
+
+<!-- ROD FLAGG -->
+<div class="section">
+  <h2>Rod-flagg-fragor &amp; svar</h2>
+  <div class="qa">
+    <div class="qa-q">"Du har inte jobbat som kommunikator &mdash; varfor soker du?"</div>
+    <div class="qa-a">Jag har jobbat med kommunikation i sex ar som journalist och redigerare. Sedan har jag lagt till teknisk kompetens. Nu vill jag tillbaka till kommunikation som huvuduppdrag, men med en helt ny verktygslada.</div>
+  </div>
+  <div class="qa">
+    <div class="qa-q">"Har du erfarenhet av statlig verksamhet?"</div>
+    <div class="qa-a">Som journalist hade jag daglig kontakt med kommunala och statliga myndigheter. Jag forstar offentlighetsprincipen, yttrandefriheten och medborgarnas ratt till information. Nu vill jag bidra inifraan.</div>
+  </div>
+  <div class="qa">
+    <div class="qa-q">"Vad vet du om förändrings&shy;kommunikation?"</div>
+    <div class="qa-a">På Hall Media samordnade jag produktion för 13 dagstidningar. När IT-systemet kraschade byggde jag en lösning, dokumenterade den och fick alla redaktioner att använda den. Det är förändringskommunikation: identifiera problemet, bygga en lösning och kommunicera så att folk faktiskt ändrar sitt beteende.</div>
+  </div>
+</div>
+
+<!-- G) PERSONLIGT BREV -->
+<div class="section">
+  <h2>G) Personligt brev (utkast)</h2>
+  <div class="letter">
+    <p>Hej,</p>
+    <p>Kort om mig: jag är journalist i botten (kandidat från JMG, sex år på Hallpressen och Hall Media), men de senaste fem åren har jag jobbat som senior teknisk rådgivare på Concentrix. Nu vill jag tillbaka till kommunikation som huvuduppdrag. Varför söker jag just den här tjänsten? Ni nämner erfarenhet av generativ AI i kommunikationsarbete som meriterande. Det fastnade.</p>
+    <p>Jag har nämligen inte bara <em>använt</em> AI-verktyg. Jag har byggt dem. Egna applikationer med ChatGPT, Claude och Gemini, på teknisk nivå med API-integrationer och allt vad det innebär. Jag vet vad de kan, var de haltar och hur man använder dem utan att tappa källkritiken. Det är, om jag ska vara ärlig, en kompetens som väldigt få kommunikatörer har.</p>
+    <p>Men det är inte hela bilden. Journalistiken gav mig det som faktiskt gör en kommunikatör: förmågan att skriva begripligt under tidspress, känsla för budskap och målgrupp, och (det här låter kanske märkligt) vanan att ifrågasätta sin egen text. Redigeringsåren på Hall Media handlade om exakt det ni beskriver i annonsen. Budskap, målgrupp, kanal, tajming. Varje dag, tretton tidningar parallellt.</p>
+    <p>En sak till. 2017 kraschade Hall Medias IT-system och blockerade produktionen för samtliga lokaltidningar. Jag hade inget formellt IT-ansvar, men byggde ett backup-system, skrev guider och koordinerade driftsättningen. Produktionen räddades. Det är den typ av kriskommunikation jag kan bidra med: inte bara skriva pressmeddelandet, utan förstå problemet och agera.</p>
+    <p>På Concentrix skriver jag kunskapsartiklar och processbeskrivningar som förstalinjen faktiskt använder. Det låter kanske inte glamoröst, men det är intern kommunikation i sin renaste form: vem läser det här, vad behöver de veta, i vilken ordning? Journalistisk metod applicerad på supportdokumentation.</p>
+    <p>Jag bor i Göteborg och kan börja enligt överenskommelse.</p>
+    <p>Johan Kullendorff</p>
+  </div>
+</div>
+
+<!-- KEYWORDS -->
+<div class="section">
+  <h2>ATS Keywords</h2>
+  <div class="kw-grid">
+    <span class="kw">strategisk kommunikation</span>
+    <span class="kw">forandringskommunikation</span>
+    <span class="kw">kriskommunikation</span>
+    <span class="kw">digital transformation</span>
+    <span class="kw">generativ AI</span>
+    <span class="kw">innehallsproduktion</span>
+    <span class="kw">malgruppsanpassad</span>
+    <span class="kw">intern kommunikation</span>
+    <span class="kw">omvarldbevakning</span>
+    <span class="kw">budskap</span>
+    <span class="kw">kanal</span>
+    <span class="kw">radgivning</span>
+    <span class="kw">organisationskommunikation</span>
+    <span class="kw">press</span>
+    <span class="kw">AI-integration</span>
+    <span class="kw">statlig vardegrund</span>
+  </div>
+</div>
+
+<footer>
+  career-ops rapport 001 &mdash; Genererad 2026-04-09 &mdash; <a href="pipeline.html">Tillbaka till pipeline</a>
+</footer>
+
+</body>
+</html>
