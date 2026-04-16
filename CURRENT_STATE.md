@@ -1,4 +1,4 @@
-# Hittajobb - Current State (2026-04-11)
+# Hittajobb - Current State (2026-04-16)
 
 ## Vad vi gjort
 
@@ -6,21 +6,30 @@
 - Klonat och anpassat santifer/career-ops för Johan
 - Alla config-filer skapade: profile.yml, cv.md, _profile.md, portals.yml
 - Playwright + npm installerat, `npm run doctor` grön
-- Skannat portaler: 35 jobb i pipeline (27 tech + 8 kommunikatör, varav 2 utgångna)
 - Pipeline.html skapad i hittajobb-roten (Johans Chrome-startsida)
-- Scan 2026-04-11: +8 nya jobb (Camunda, GitLab x2, Nexer x2, Akkodis, Jobandtalent, Frontendutvecklare), 2 utgångna (GöteborgsOperan, Göteborgs Stad)
+- Senaste scan: 55 jobb i pipeline, 1 ansökt, 8 utvärderade, 4 utgångna
 
-### Utvärderade jobb (4 st)
-| # | Jobb | Score | Filer |
-|---|------|-------|-------|
-| 001 | Länsstyrelsen VGR - Strategisk kommunikatör | 3.8/5 | rapport + HTML + CV-PDF |
-| 002 | Experis/Trafikverket - IT-tekniker | 4.2/5 | rapport + HTML |
-| 003 | Länsstyrelsen VGR - Webbredaktör/Språkvårdare | 4.1/5 | rapport + HTML |
-| 004 | AFRY - Teknikinformatör | 4.5/5 | rapport + HTML |
+### Platsbanken-scanner (af-mcp)
+- `af-mcp/server.py` — MCP-server mot JobTech API (4 verktyg: sok_jobb, hamta_annons, sok_taxonomy, autocomplete)
+- `af-mcp/scan.py` — batch-scanner med titelfiltrering från portals.yml (40 → 10 relevanta träffar/scan)
+- Konfigurerad i `~/.mcp.json` för Claude Code
 
-Alla rapporter i: career-ops/reports/ (markdown) + hittajobb-roten (HTML)
-Tracker: career-ops/data/applications.md
-Pipeline: career-ops/data/pipeline.md + hittajobb/pipeline.html
+### Utvärderade jobb (9 st)
+| # | Jobb | Score | Status |
+|---|------|-------|--------|
+| 001 | Länsstyrelsen VGR - Strategisk kommunikatör | 3.8/5 | Ej ansökt (deadline 20 apr) |
+| 002 | Experis/Trafikverket - IT-tekniker | 4.2/5 | Utvärderad |
+| 003 | Länsstyrelsen VGR - Webbredaktör/Språkvårdare | 4.1/5 | Utvärderad |
+| 004 | AFRY - Teknikinformatör | 4.5/5 | **ANSÖKT 2026-04-16** |
+| 005 | CarbonCloud - Customer Support Specialist | 4.3/5 | Utvärderad |
+| 006 | Linden-IT - Operativ Team Lead IT Service Desk | 3.5/5 | Utvärderad |
+| 007 | Experis - Servicedesk-tekniker inom IT | 3.8/5 | Utvärderad |
+| 008 | Akkodis - IT-Support i Göteborg | 3.7/5 | Utvärderad (deadline 28 apr) |
+| 009 | Frico AB - Marknadskommunikatör | okänd | Utvärderad |
+
+Rapporter: `reports/` (HTML, gitignored) + `career-ops/reports/` (markdown)
+Tracker: `career-ops/data/applications.md`
+Pipeline: `career-ops/data/pipeline.md` + `pipeline.html`
 
 ### GitHub-profil städad
 - Ny bio: "Technical Advisor | Python, Flask, AI APIs | Journalist background. Building tools with LLMs. Gothenburg, Sweden."
@@ -56,22 +65,24 @@ Komplett genomgång och uppdatering:
 
 ### Regler (sparade i memory)
 - **NDA:** Concentrix KPI-reform nämns ALDRIG i ansökningar
-- **HTML-output:** Alla rapporter som HTML i hittajobb-roten + md i career-ops/reports/
+- **HTML-output:** Rapporter i `reports/` (HTML) + `career-ops/reports/` (md). Backlinks via `../pipeline.html`
 - **Skrivstil:** Läs writing_style_analysis.json, undvik AI-mönster (se feedback_writing_style.md)
 - **Svenska tecken:** Alltid å ä ö, aldrig ASCII-ersättningar
 - **Pipeline.html:** Johans Chrome-startsida, uppdateras efter varje scan/utvärdering
 
 ## Nästa steg
 
-### Jobbansökningar att skicka
-- Länsstyrelsen strategisk kommunikatör (deadline 20 april)
-- AFRY teknikinformatör (4.5/5, högsta score)
-- 23 oevaluerade jobb kvar i pipeline
+### Jobbansökningar
+- Akkodis IT-Support (deadline 28 april) — score 3.7/5
+- Länsstyrelsen strategisk kommunikatör (deadline 20 april) — score 3.8/5
+- ~45 oevaluerade jobb kvar i pipeline
+
+### Verktyg
+- Kör `python af-mcp/scan.py` för att hämta nya Platsbanken-jobb
+- Kör `/career-ops pipeline` för att utvärdera jobb i pipeline.md
 
 ### Övrigt
-- thisisme: Aktivera GitHub Pages om inte redan gjort
 - LinkedIn: Överväg att rensa bland 42 skills (behåll 15-20 relevanta)
-- LinkedIn: Projektbeskrivningar saknar CompareAI och DebateAI på GitHub-länknivå
 
 ## Filstruktur
 
