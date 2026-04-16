@@ -23,15 +23,27 @@ Kör `/career-ops` i career-ops-mappen för alla kommandon.
 Alla personliga anpassningar: `career-ops/config/profile.yml` + `career-ops/modes/_profile.md`
 
 ## HTML-output (VIKTIGT)
-Alla rapporter och vyer genereras som HTML i hittajobb-roten (`C:\AI\hittajobb\`):
-- `pipeline.html` — jobbpipeline med filter, statusmarkeringar och rapportlänkar. **Johans startsida i Chrome.**
-- `{NNN}-{företag}.html` (t.ex. `001-lansstyrelsen-vgr.html`) — utvärderingsrapporter per jobb
+- `pipeline.html` — jobbpipeline med filter, statusmarkeringar och rapportlänkar. **Johans startsida i Chrome.** Ligger i hittajobb-roten.
+- `reports/{NNN}-{företag}.html` (t.ex. `reports/001-lansstyrelsen-vgr.html`) — utvärderingsrapporter per jobb, i undermappen `reports/`
 - Markdown-versioner sparas även i `career-ops/reports/` för career-ops-systemet
-- **Efter varje utvärdering:** uppdatera pipeline.html med status "UTVÄRDERAD" + länk till HTML-rapport
+- **Efter varje utvärdering:** spara HTML-rapporten i `reports/`, uppdatera pipeline.html med status "UTVÄRDERAD" + länk `reports/NNN-slug.html`
 - **Efter varje scan:** uppdatera pipeline.html med nya jobb
 - **Använd ALLTID å ä ö** — aldrig ASCII-ersättningar i svenska texter
 - Rapporternas HTML har mörkt tema, scorecard, STAR-historier, personligt brev, ATS-keywords
-- Rapporter länkas tillbaka till pipeline.html via footer
+- Rapporter länkas tillbaka till pipeline.html via footer med `../pipeline.html` (ett steg upp från reports/)
+
+## Platsbanken-scanner
+`af-mcp/scan.py` söker Platsbanken (Arbetsförmedlingens API) och uppdaterar pipeline-filerna.
+
+```
+python af-mcp/scan.py              # senaste 7 dagarna
+python af-mcp/scan.py --days 14    # senaste 14 dagarna
+python af-mcp/scan.py --dry-run    # visa resultat utan att skriva filer
+python af-mcp/scan.py --no-filter  # skippa titelfiltrering (debugging)
+```
+
+Scannern filtrerar träffar mot titelfiltret i `career-ops/portals.yml` (81 positiva, 26 negativa termer).
+Uppdaterar: `pipeline.html`, `career-ops/data/pipeline.md`, `career-ops/data/scan-history.tsv`
 
 ## Principer
 - Ärlig, konkret ton — inget corporatespeak

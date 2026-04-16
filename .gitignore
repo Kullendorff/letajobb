@@ -19,10 +19,12 @@ career-ops/output/
 # Utvärderingsrapporter med kontaktuppgifter
 career-ops/reports/
 
-# HTML-rapporter med persondata (002-004 innehåller telefon/email)
-002-*.html
-003-*.html
-004-*.html
+# HTML-rapporter (persondata — hela mappen ignoreras)
+reports/
+
+# Python cache
+__pycache__/
+*.pyc
 
 # === ÖVRIGT ===
 

@@ -27,6 +27,7 @@
   .job { display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 0.5rem; background: var(--surface); transition: all 0.15s; text-decoration: none; color: inherit; }
   .job:hover { background: var(--surface-hover); border-color: var(--accent); transform: translateX(2px); }
   .job.done { border-left: 3px solid var(--green); }
+  .job.hot { border-left: 3px solid var(--orange); }
   .job-info { flex: 1; min-width: 0; }
   .job-title { font-weight: 600; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .job-company { font-size: 0.82rem; color: var(--text-dim); }
@@ -40,7 +41,12 @@
   .tag-remote { background: #3a3020; color: #fbbf24; }
   .tag-urgent { background: #4a1c1c; color: #f87171; }
   .tag-done { background: #1a3a2a; color: #4ade80; }
+  .tag-applied { background: #0d4a2a; color: #22d66f; border: 1px solid #22d66f; font-weight: 800; }
+  .job.applied { border-left: 3px solid #22d66f; background: #111a20; }
   .tag-new { background: #1a2a4a; color: #6c9cff; }
+  .tag-ej { background: #2a2020; color: #888; text-decoration: line-through; }
+  .job.ej { opacity: 0.4; border-left: 3px solid #555; }
+  .tag-hot { background: #3a2a10; color: #fbbf24; }
   .tag-expired { background: #3a2020; color: #f87171; text-decoration: line-through; }
   .job.expired { opacity: 0.5; border-left: 3px solid var(--red); }
   .arrow { color: var(--text-dim); font-size: 1.1rem; flex-shrink: 0; }
@@ -52,52 +58,79 @@
 
 <header>
   <h1>Jobbpipeline</h1>
-  <div class="subtitle">Johan Kullendorff — Senast skannad 2026-04-11</div>
+  <div class="subtitle">Johan Kullendorff — Senast skannad 2026-04-16</div>
   <div class="stats">
-    <div class="stat"><span class="num">35</span> jobb totalt</div>
-    <div class="stat"><span class="num" style="color:var(--green)">4</span> utvärderade</div>
-    <div class="stat"><span class="num" style="color:var(--accent)">8</span> nya</div>
-    <div class="stat"><span class="num" style="color:var(--red)">2</span> utgångna</div>
-    <div class="stat"><span class="num">21</span> väntar</div>
+    <div class="stat"><span class="num">55</span> jobb totalt</div>
+    <div class="stat"><span class="num" style="color:#22d66f">1</span> ansökt</div>
+    <div class="stat"><span class="num" style="color:var(--green)">8</span> utvärderade</div>
+    <div class="stat"><span class="num" style="color:var(--accent)">5</span> nya</div>
+    <div class="stat"><span class="num" style="color:var(--red)">4</span> utgångna</div>
+    <div class="stat"><span class="num">45</span> väntar</div>
   </div>
 </header>
 
 <div class="filters">
-  <button class="filter-btn active" onclick="filterJobs('all')">Alla (35)</button>
-  <button class="filter-btn" onclick="filterJobs('done')">Utvärderade (4)</button>
-  <button class="filter-btn" onclick="filterJobs('new')">Nya (8)</button>
+  <button class="filter-btn active" onclick="filterJobs('all')">Alla (55)</button>
+  <button class="filter-btn" onclick="filterJobs('applied')">Ansökta (1)</button>
+  <button class="filter-btn" onclick="filterJobs('done')">Utvärderade (8)</button>
+  <button class="filter-btn" onclick="filterJobs('new')">Nya (3)</button>
   <button class="filter-btn" onclick="filterJobs('gbg')">Göteborg</button>
   <button class="filter-btn" onclick="filterJobs('remote')">Remote</button>
   <button class="filter-btn" onclick="filterJobs('komm')">Kommunikation</button>
   <button class="filter-btn" onclick="filterJobs('tech')">Tech/Support</button>
   <button class="filter-btn" onclick="filterJobs('expired')">Utgångna</button>
+  <button class="filter-btn" onclick="filterJobs('ej')">Ej aktuella</button>
 </div>
 
-<!-- UTVÄRDERADE -->
-<div class="section-label">Utvärderade</div>
+<!-- ANSÖKTA -->
+<div class="section-label" style="color:#22d66f">✅ Ansökta</div>
 <ul class="job-list">
+  <a href="https://jobs.smartrecruiters.com/AFRY/cce04ac7-c9bd-418d-bb52-524d390b912a" target="_blank" class="job applied" data-tags="komm tech gbg applied done">
+    <div class="job-info">
+      <div class="job-title">Teknikinformatör med teknisk bakgrund</div>
+      <div class="job-company">AFRY — Score: 4.5/5 — Ansökt 2026-04-16 via SmartRecruiters</div>
+    </div>
+    <a href="reports/004-afry-teknikinformator.html" class="report-link" onclick="event.stopPropagation()">📋 Rapport</a>
+    <div class="tags">
+      <span class="tag tag-applied">ANSÖKT ✓</span>
+      <span class="tag tag-komm">Teknikinfo</span>
+      <span class="tag tag-gbg">Göteborg</span>
+    </div>
+    <span class="arrow">→</span>
+  </a>
+</ul>
+
+<!-- UTVÄRDERADE -->
+<div class="section-label" style="color:#4ade80">✅ Utvärderade — 8 jobb (senast 2026-04-16)</div>
+<ul class="job-list">
+  <a href="https://arbetsformedlingen.se/platsbanken/annonser/30869742" target="_blank" class="job done" data-tags="tech gbg done">
+    <div class="job-info">
+      <div class="job-title">IT-Support i Göteborg <span style="color:#f87171;font-size:0.75rem;margin-left:0.5rem">⚠️ Deadline 28 april</span></div>
+      <div class="job-company">Akkodis Sweden AB — Score: 3.7/5 — Onsite, AD/M365/VPN, konsultuppdrag</div>
+    </div>
+    <a href="reports/008-akkodis.html" class="report-link" onclick="event.stopPropagation()">📋 Rapport</a>
+    <div class="tags">
+      <span class="tag tag-done">UTVÄRDERAD 3.7</span>
+      <span class="tag tag-urgent">⚠️ 28 APR</span>
+      <span class="tag" style="background:#1a1d27;color:#555;font-size:0.65rem">2026-04-16</span>
+      <span class="tag tag-tech">IT Support</span>
+      <span class="tag tag-gbg">Göteborg</span>
+    </div>
+    <span class="arrow">→</span>
+  </a>
+  <a href="https://to.indeed.com/aaq77bh2vd4d" target="_blank" class="job done" data-tags="tech gbg done"><div class="job-info"><div class="job-title">Servicedesk-tekniker inom IT</div><div class="job-company">Experis — Score: 3.8/5 — Under nivå men säker match, språngbräda</div></div><a href="reports/007-experis-servicedesk.html" class="report-link" onclick="event.stopPropagation()">📋 Rapport</a><div class="tags"><span class="tag tag-done">UTVÄRDERAD 3.8</span><span class="tag" style="background:#1a1d27;color:#555;font-size:0.65rem">2026-04-16</span><span class="tag tag-tech">Service Desk</span><span class="tag tag-gbg">Göteborg</span></div><span class="arrow">→</span></a>
+  <a href="https://to.indeed.com/aaj76jyksvqj" target="_blank" class="job done" data-tags="tech gbg done"><div class="job-info"><div class="job-title">Customer Support Specialist</div><div class="job-company">CarbonCloud — Score: 4.3/5 — SaaS, stark match</div></div><a href="reports/005-carboncloud.html" class="report-link" onclick="event.stopPropagation()">📋 Rapport</a><div class="tags"><span class="tag tag-done">UTVÄRDERAD 4.3</span><span class="tag" style="background:#1a1d27;color:#555;font-size:0.65rem">2026-04-16</span><span class="tag tag-tech">SaaS Support</span><span class="tag tag-gbg">Göteborg</span></div><span class="arrow">→</span></a>
+  <a href="https://to.indeed.com/aaw9wlb8swcy" target="_blank" class="job done" data-tags="tech gbg done"><div class="job-info"><div class="job-title">Operativ Team Lead IT Service Desk</div><div class="job-company">Linden-IT — Score: 3.5/5 — Stretch: ledarskap gap</div></div><a href="reports/006-linden-it.html" class="report-link" onclick="event.stopPropagation()">📋 Rapport</a><div class="tags"><span class="tag tag-done">UTVÄRDERAD 3.5</span><span class="tag" style="background:#1a1d27;color:#555;font-size:0.65rem">2026-04-16</span><span class="tag tag-tech">Lead</span><span class="tag tag-gbg">Göteborg</span></div><span class="arrow">→</span></a>
   <a href="https://lansstyrelsen.varbi.com/en/what:job/jobID:921067" target="_blank" class="job done" data-tags="komm gbg done">
     <div class="job-info">
       <div class="job-title">Strategisk kommunikatör</div>
       <div class="job-company">Länsstyrelsen Västra Götaland — Score: 3.8/5 — Deadline 20 april</div>
     </div>
-    <a href="001-lansstyrelsen-vgr.html" class="report-link" onclick="event.stopPropagation()">📋 Rapport</a>
+    <a href="reports/001-lansstyrelsen-vgr.html" class="report-link" onclick="event.stopPropagation()">📋 Rapport</a>
     <div class="tags">
       <span class="tag tag-done">UTVÄRDERAD 3.8</span>
+      <span class="tag" style="background:#1a1d27;color:#555;font-size:0.65rem">2026-04-15</span>
       <span class="tag tag-komm">Kommunikation</span>
-      <span class="tag tag-gbg">Göteborg</span>
-    </div>
-    <span class="arrow">→</span>
-  </a>
-  <a href="https://to.indeed.com/aa7tmf9m9z8q" target="_blank" class="job done" data-tags="komm tech gbg done">
-    <div class="job-info">
-      <div class="job-title">Teknikinformatör med teknisk bakgrund</div>
-      <div class="job-company">AFRY — Score: 4.5/5 — Högsta score, drömroll hybrid tech+komm</div>
-    </div>
-    <a href="004-afry-teknikinformator.html" class="report-link" onclick="event.stopPropagation()">📋 Rapport</a>
-    <div class="tags">
-      <span class="tag tag-done">UTVÄRDERAD 4.5</span>
-      <span class="tag tag-komm">Teknikinfo</span>
       <span class="tag tag-gbg">Göteborg</span>
     </div>
     <span class="arrow">→</span>
@@ -107,124 +140,145 @@
       <div class="job-title">IT-tekniker Trafikverket</div>
       <div class="job-company">Experis — Score: 4.2/5 — Stark match felsökning, gap Linux/serverdrift</div>
     </div>
-    <a href="002-experis-trafikverket.html" class="report-link" onclick="event.stopPropagation()">📋 Rapport</a>
+    <a href="reports/002-experis-trafikverket.html" class="report-link" onclick="event.stopPropagation()">📋 Rapport</a>
     <div class="tags">
       <span class="tag tag-done">UTVÄRDERAD 4.2</span>
+      <span class="tag" style="background:#1a1d27;color:#555;font-size:0.65rem">2026-04-15</span>
       <span class="tag tag-tech">IT</span>
-      <span class="tag tag-gbg">Göteborg</span>
-    </div>
-    <span class="arrow">→</span>
-  </a>
-  <a href="https://to.indeed.com/aa8y9r98lgkc" target="_blank" class="job done" data-tags="komm gbg done">
-    <div class="job-info">
-      <div class="job-title">Webbredaktör / Språkvårdare</div>
-      <div class="job-company">Länsstyrelsen Västra Götaland — Score: 4.1/5 — Journalistbakgrund stark</div>
-    </div>
-    <a href="003-lansstyrelsen-webbredaktor.html" class="report-link" onclick="event.stopPropagation()">📋 Rapport</a>
-    <div class="tags">
-      <span class="tag tag-done">UTVÄRDERAD 4.1</span>
-      <span class="tag tag-komm">Webb</span>
       <span class="tag tag-gbg">Göteborg</span>
     </div>
     <span class="arrow">→</span>
   </a>
 </ul>
 
-<!-- NYA JOBB 2026-04-11 -->
-<div class="section-label">Nya jobb — hittade 2026-04-11</div>
+<!-- NYA JOBB 2026-04-16 -->
+<div class="section-label">🔥 Nya jobb — hittade 2026-04-16</div>
 <ul class="job-list">
-  <a href="https://jobs.ashbyhq.com/camunda/1810625c-4515-4260-997e-ee25ac11bdfd" target="_blank" class="job" data-tags="tech remote new">
+  <a href="https://arbetsformedlingen.se/platsbanken/annonser/30894426" target="_blank" class="job hot" data-tags="tech gbg new">
     <div class="job-info">
-      <div class="job-title">Technical Support Engineer - EMEA</div>
-      <div class="job-company">Camunda — Fully remote, agentic automation-plattform</div>
+      <div class="job-title">IT Tekniker 2nd line support</div>
+      <div class="job-company">Kriminalvården — Göteborg, 2nd line, statlig myndighet</div>
     </div>
     <div class="tags">
+      <span class="tag tag-hot">🔥 2ND LINE</span>
       <span class="tag tag-new">NY</span>
-      <span class="tag tag-tech">Support</span>
-      <span class="tag tag-remote">Remote</span>
-    </div>
-    <span class="arrow">→</span>
-  </a>
-  <a href="https://job-boards.greenhouse.io/gitlab/jobs/7846483002" target="_blank" class="job" data-tags="tech remote new">
-    <div class="job-info">
-      <div class="job-title">Support Engineer (EMEA)</div>
-      <div class="job-company">GitLab — All-remote, DevOps-plattform, Linux-krav</div>
-    </div>
-    <div class="tags">
-      <span class="tag tag-new">NY</span>
-      <span class="tag tag-tech">Support</span>
-      <span class="tag tag-remote">Remote</span>
-    </div>
-    <span class="arrow">→</span>
-  </a>
-  <a href="https://job-boards.greenhouse.io/gitlab/jobs/8324426002" target="_blank" class="job" data-tags="tech remote new">
-    <div class="job-info">
-      <div class="job-title">Associate Support Engineer (EMEA)</div>
-      <div class="job-company">GitLab — Lägre krav, bra insteg, all-remote</div>
-    </div>
-    <div class="tags">
-      <span class="tag tag-new">NY</span>
-      <span class="tag tag-tech">Junior</span>
-      <span class="tag tag-remote">Remote</span>
-    </div>
-    <span class="arrow">→</span>
-  </a>
-  <a href="https://nexerinfrastructure.teamtailor.com/jobs/7145689-it-supporttekniker" target="_blank" class="job" data-tags="tech gbg new">
-    <div class="job-info">
-      <div class="job-title">IT-supporttekniker</div>
-      <div class="job-company">Nexer Infrastructure — Konsultuppdrag, 1st/2nd line, AD/M365</div>
-    </div>
-    <div class="tags">
-      <span class="tag tag-new">NY</span>
-      <span class="tag tag-tech">IT Support</span>
+      <span class="tag tag-tech">2nd line</span>
       <span class="tag tag-gbg">Göteborg</span>
     </div>
     <span class="arrow">→</span>
   </a>
-  <a href="https://nexerinfrastructure.teamtailor.com/jobs/7369570-onsite-supporttekniker-deltid" target="_blank" class="job" data-tags="tech gbg new">
+  <a href="https://arbetsformedlingen.se/platsbanken/annonser/30900848" target="_blank" class="job" data-tags="tech gbg new">
     <div class="job-info">
-      <div class="job-title">Onsite-supporttekniker (deltid)</div>
-      <div class="job-company">Nexer Infrastructure — Deltid, onsite hos kund</div>
+      <div class="job-title">IT-Tekniker till bolag i Göteborg</div>
+      <div class="job-company">Your Talent AB — Göteborg, konsultuppdrag</div>
     </div>
     <div class="tags">
       <span class="tag tag-new">NY</span>
-      <span class="tag tag-tech">Support</span>
+      <span class="tag tag-tech">IT</span>
       <span class="tag tag-gbg">Göteborg</span>
     </div>
     <span class="arrow">→</span>
   </a>
-  <a href="https://arbetsformedlingen.se/platsbanken/annonser/30869742" target="_blank" class="job" data-tags="tech gbg new">
+  <a href="https://to.indeed.com/aaqctg6zk4bk" target="_blank" class="job" data-tags="tech gbg new">
     <div class="job-info">
-      <div class="job-title">IT-Support i Göteborg</div>
-      <div class="job-company">Akkodis Sweden AB — Onsite hos kund, AD/M365/VPN</div>
+      <div class="job-title">AV-supporttekniker (vikariat)</div>
+      <div class="job-company">Empir Industry — Göteborg, audiovisuell support, vikariat</div>
     </div>
     <div class="tags">
       <span class="tag tag-new">NY</span>
-      <span class="tag tag-tech">IT Support</span>
+      <span class="tag tag-tech">AV Support</span>
       <span class="tag tag-gbg">Göteborg</span>
     </div>
     <span class="arrow">→</span>
   </a>
-  <a href="https://jobs.lever.co/jobandtalent/4a9582cc-0c30-4189-9c51-47703be8779b" target="_blank" class="job" data-tags="tech remote new">
+</ul>
+
+<!-- HITTADE 2026-04-15 -->
+<div class="section-label">Hittade 2026-04-15</div>
+<ul class="job-list">
+  <a href="https://to.indeed.com/aasc6cz4g786" target="_blank" class="job" data-tags="tech gbg"><div class="job-info"><div class="job-title">IT-support — Servicedesk & Onsite</div><div class="job-company">Peoplez — Göteborg, servicedesk + onsite-support, bred IT-roll</div></div><div class="tags"><span class="tag tag-tech">IT Support</span><span class="tag tag-gbg">Göteborg</span></div><span class="arrow">→</span></a>
+  <a href="https://to.indeed.com/aa2z262k4gqw" target="_blank" class="job" data-tags="tech gbg"><div class="job-info"><div class="job-title">Supporttekniker till Trafikverket</div><div class="job-company">Poolia — Göteborg, Trafikverket (annan bemanningsfirma än Experis)</div></div><div class="tags"><span class="tag tag-tech">Support</span><span class="tag tag-gbg">Göteborg</span></div><span class="arrow">→</span></a>
+  <a href="https://to.indeed.com/aahyjfcj2jh7" target="_blank" class="job" data-tags="tech gbg"><div class="job-info"><div class="job-title">Endpoint Specialist</div><div class="job-company">Xenit AB — Göteborg, endpoint management, modern arbetsplats</div></div><div class="tags"><span class="tag tag-tech">Endpoint</span><span class="tag tag-gbg">Göteborg</span></div><span class="arrow">→</span></a>
+  <a href="https://to.indeed.com/aa9b822bvz2b" target="_blank" class="job" data-tags="tech gbg"><div class="job-info"><div class="job-title">Supporttekniker</div><div class="job-company">Nordlo Group — Göteborg, IT-konsultbolag</div></div><div class="tags"><span class="tag tag-tech">Support</span><span class="tag tag-gbg">Göteborg</span></div><span class="arrow">→</span></a>
+  <a href="https://to.indeed.com/aargtnpgxqhj" target="_blank" class="job" data-tags="tech gbg"><div class="job-info"><div class="job-title">IT-support / Helpdesk</div><div class="job-company">Danda — Göteborg, helpdesk-roll</div></div><div class="tags"><span class="tag tag-tech">Helpdesk</span><span class="tag tag-gbg">Göteborg</span></div><span class="arrow">→</span></a>
+  <a href="https://to.indeed.com/aadn4jtj7y2q" target="_blank" class="job" data-tags="tech gbg"><div class="job-info"><div class="job-title">1st line Support Tekniker</div><div class="job-company">ACEA Consulting — Göteborg, konsultuppdrag</div></div><div class="tags"><span class="tag tag-tech">1st line</span><span class="tag tag-gbg">Göteborg</span></div><span class="arrow">→</span></a>
+</ul>
+
+<!-- HITTADE 2026-04-14 (förra scanningen) -->
+<div class="section-label">Hittade 2026-04-14</div>
+<ul class="job-list">
+  <a href="https://to.indeed.com/aatwnwxsjs6z" target="_blank" class="job" data-tags="tech gbg"><div class="job-info"><div class="job-title">Systemspecialist / IT-tekniker</div><div class="job-company">e-academyhub AB — Göteborg (hybrid), 1st–3rd line, IT-säkerhet, SQL, DevOps</div></div><div class="tags"><span class="tag tag-tech">IT/DevOps</span><span class="tag tag-gbg">Göteborg</span></div><span class="arrow">→</span></a>
+  <a href="https://arbetsformedlingen.se/platsbanken/annonser/30766630" target="_blank" class="job" data-tags="tech gbg"><div class="job-info"><div class="job-title">IT-support till myndighet i centrala Göteborg</div><div class="job-company">Platsbanken — Myndighetskonsult, centralt Göteborg</div></div><div class="tags"><span class="tag tag-tech">IT Support</span><span class="tag tag-gbg">Göteborg</span></div><span class="arrow">→</span></a>
+  <a href="https://arbetsformedlingen.se/platsbanken/annonser/30669314" target="_blank" class="job" data-tags="tech gbg"><div class="job-info"><div class="job-title">Junior Administrativ Koordinator – IT & Support</div><div class="job-company">Platsbanken — Göteborg, admin + IT-stöd</div></div><div class="tags"><span class="tag tag-tech">IT/Admin</span><span class="tag tag-gbg">Göteborg</span></div><span class="arrow">→</span></a>
+  <a href="https://to.indeed.com/aay48q2kgw4j" target="_blank" class="job" data-tags="tech gbg"><div class="job-info"><div class="job-title">EDI Specialist EMEA & US</div><div class="job-company">Mölnlycke — Göteborg, EDI/integration</div></div><div class="tags"><span class="tag tag-tech">Integration</span><span class="tag tag-gbg">Göteborg</span></div><span class="arrow">→</span></a>
+</ul>
+
+<!-- HITTADE 2026-04-13 -->
+<div class="section-label">Hittade 2026-04-13</div>
+<ul class="job-list">
+  <a href="https://to.indeed.com/aapfs8f4kfl4" target="_blank" class="job hot" data-tags="tech gbg remote">
     <div class="job-info">
-      <div class="job-title">Product Support Lead (EMEA Remote)</div>
-      <div class="job-company">Jobandtalent — Intern produktsupport, leadroll</div>
+      <div class="job-title">Technical Support Specialist</div>
+      <div class="job-company">Avinode Group — Göteborg/remote-first, SaaS, API-docs, felsökning — TOPP-MATCH!</div>
     </div>
     <div class="tags">
-      <span class="tag tag-new">NY</span>
+      <span class="tag tag-hot">🔥 TOPP</span>
+      <span class="tag tag-tech">API + Support</span>
+      <span class="tag tag-gbg">Göteborg</span>
+    </div>
+    <span class="arrow">→</span>
+  </a>
+  <a href="https://to.indeed.com/aavn2dnhsr97" target="_blank" class="job" data-tags="komm gbg">
+    <div class="job-info">
+      <div class="job-title">Kommunikationsstrateg (deltid 50%)</div>
+      <div class="job-company">Sway Sourcing — Göteborg, konsultuppdrag april–dec 2026, strategi+operativt</div>
+    </div>
+    <div class="tags">
+      <span class="tag tag-komm">Kommunikation</span>
+      <span class="tag tag-gbg">Göteborg</span>
+    </div>
+    <span class="arrow">→</span>
+  </a>
+  <a href="https://to.indeed.com/aatswnw776ff" target="_blank" class="job" data-tags="tech gbg">
+    <div class="job-info">
+      <div class="job-title">Support & Integration Specialist</div>
+      <div class="job-company">Wallenius Sol AB — Göteborg, system/integration, CargoWise TMS</div>
+    </div>
+    <div class="tags">
+      <span class="tag tag-tech">Integration</span>
+      <span class="tag tag-gbg">Göteborg</span>
+    </div>
+    <span class="arrow">→</span>
+  </a>
+  <a href="https://to.indeed.com/aavrnjyh6xkt" target="_blank" class="job" data-tags="tech gbg">
+    <div class="job-info">
+      <div class="job-title">IT-tekniker – Microsoft 365 & Intern IT</div>
+      <div class="job-company">Antura AB — Göteborg, M365/Intune/nätverk, PPM-bolag</div>
+    </div>
+    <div class="tags">
+      <span class="tag tag-tech">IT/M365</span>
+      <span class="tag tag-gbg">Göteborg</span>
+    </div>
+    <span class="arrow">→</span>
+  </a>
+  <a href="https://to.indeed.com/aa78h278tjmp" target="_blank" class="job" data-tags="tech gbg">
+    <div class="job-info">
+      <div class="job-title">IT Support Lead</div>
+      <div class="job-company">Infracom — Göteborg, team lead 1st/2nd line, SLA/KPI</div>
+    </div>
+    <div class="tags">
       <span class="tag tag-tech">Lead</span>
-      <span class="tag tag-remote">Remote</span>
+      <span class="tag tag-gbg">Göteborg</span>
     </div>
     <span class="arrow">→</span>
   </a>
-  <a href="https://arbetsformedlingen.se/platsbanken/annonser/30638779" target="_blank" class="job" data-tags="tech gbg new">
+  <a href="https://to.indeed.com/aacltfsfvqsr" target="_blank" class="job" data-tags="tech gbg">
     <div class="job-info">
-      <div class="job-title">Frontendutvecklare med intresse för Python</div>
-      <div class="job-company">Platsbanken — Hybrid frontend + Python</div>
+      <div class="job-title">IT-tekniker</div>
+      <div class="job-company">Experis — Göteborg, nytt uppdrag (ej Trafikverket)</div>
     </div>
     <div class="tags">
-      <span class="tag tag-new">NY</span>
-      <span class="tag tag-tech">Python</span>
+      <span class="tag tag-tech">IT</span>
       <span class="tag tag-gbg">Göteborg</span>
     </div>
     <span class="arrow">→</span>
@@ -258,31 +312,59 @@
     </div>
     <span class="arrow">→</span>
   </a>
+  <a href="https://to.indeed.com/aakhwltqwjmw" target="_blank" class="job expired" data-tags="tech gbg expired">
+    <div class="job-info">
+      <div class="job-title">Intern IT-supporttekniker</div>
+      <div class="job-company">Hogia-gruppen — Stenungsund, hybrid — Deadline 12 april (passerad)</div>
+    </div>
+    <div class="tags">
+      <span class="tag tag-expired">UTGÅNGEN</span>
+      <span class="tag tag-tech">IT Support</span>
+      <span class="tag tag-gbg">Göteborg</span>
+    </div>
+    <span class="arrow">→</span>
+  </a>
+  <a href="https://karriar.intersport.se/jobs/7329858-it-operations-lead-till-intersport" target="_blank" class="job expired" data-tags="tech gbg expired">
+    <div class="job-info">
+      <div class="job-title">IT Operations Lead</div>
+      <div class="job-company">INTERSPORT — Mölndal — Stängd</div>
+    </div>
+    <div class="tags">
+      <span class="tag tag-expired">UTGÅNGEN</span>
+      <span class="tag tag-tech">Lead</span>
+      <span class="tag tag-gbg">Mölndal</span>
+    </div>
+    <span class="arrow">→</span>
+  </a>
 </ul>
 
 <!-- GÖTEBORG TECH -->
 <div class="section-label">Göteborg — Tech / Support / IT</div>
 <ul class="job-list">
-  <a href="https://to.indeed.com/aa2z8d2j92wx" target="_blank" class="job" data-tags="tech gbg"><div class="job-info"><div class="job-title">Junior Supporttekniker</div><div class="job-company">Friday Väst AB</div></div><div class="tags"><span class="tag tag-tech">Support</span><span class="tag tag-gbg">Göteborg</span></div><span class="arrow">→</span></a>
-  <a href="https://to.indeed.com/aaprxcd6wjdn" target="_blank" class="job" data-tags="tech gbg"><div class="job-info"><div class="job-title">IT-supporttekniker Onsite</div><div class="job-company">Techfactory</div></div><div class="tags"><span class="tag tag-tech">IT Support</span><span class="tag tag-gbg">Göteborg</span></div><span class="arrow">→</span></a>
-  <a href="https://to.indeed.com/aaq77bh2vd4d" target="_blank" class="job" data-tags="tech gbg"><div class="job-info"><div class="job-title">Servicedesk-tekniker inom IT</div><div class="job-company">Experis</div></div><div class="tags"><span class="tag tag-tech">Service Desk</span><span class="tag tag-gbg">Göteborg</span></div><span class="arrow">→</span></a>
-  <a href="https://to.indeed.com/aaj76jyksvqj" target="_blank" class="job" data-tags="tech gbg"><div class="job-info"><div class="job-title">Customer Support Specialist</div><div class="job-company">CarbonCloud — SaaS, nypostat</div></div><div class="tags"><span class="tag tag-tech">Support</span><span class="tag tag-gbg">Göteborg</span></div><span class="arrow">→</span></a>
-  <a href="https://to.indeed.com/aaw9wlb8swcy" target="_blank" class="job" data-tags="tech gbg"><div class="job-info"><div class="job-title">Operativ Team Lead IT Service Desk</div><div class="job-company">Linden-IT</div></div><div class="tags"><span class="tag tag-tech">Lead</span><span class="tag tag-gbg">Göteborg</span></div><span class="arrow">→</span></a>
-  <a href="https://to.indeed.com/aa6bm87fb46v" target="_blank" class="job" data-tags="tech gbg"><div class="job-info"><div class="job-title">Technical Services Specialist</div><div class="job-company">Johnson Controls — Mölndal</div></div><div class="tags"><span class="tag tag-tech">Tech</span><span class="tag tag-gbg">Göteborg</span></div><span class="arrow">→</span></a>
-  <a href="https://to.indeed.com/aam8hn4629s4" target="_blank" class="job" data-tags="tech gbg"><div class="job-info"><div class="job-title">EDI / Integration Developer</div><div class="job-company">Hultafors Group</div></div><div class="tags"><span class="tag tag-tech">Dev</span><span class="tag tag-gbg">Göteborg</span></div><span class="arrow">→</span></a>
+  <a href="https://nexerinfrastructure.teamtailor.com/jobs/7145689-it-supporttekniker" target="_blank" class="job ej" data-tags="tech gbg ej"><div class="job-info"><div class="job-title">IT-supporttekniker</div><div class="job-company">Nexer Infrastructure — Annons borttagen (410)</div></div><div class="tags"><span class="tag tag-ej">EJ AKTUELL</span><span class="tag tag-tech">IT Support</span><span class="tag tag-gbg">Göteborg</span></div><span class="arrow">→</span></a>
+  <a href="https://nexerinfrastructure.teamtailor.com/jobs/7369570-onsite-supporttekniker-deltid" target="_blank" class="job ej" data-tags="tech gbg ej"><div class="job-info"><div class="job-title">Onsite-supporttekniker (deltid)</div><div class="job-company">Nexer Infrastructure — 50-60% deltid, inte tillräcklig inkomst i akut läge</div></div><div class="tags"><span class="tag tag-ej">EJ AKTUELL</span><span class="tag tag-tech">Support</span><span class="tag tag-gbg">Göteborg</span></div><span class="arrow">→</span></a>
+  <a href="https://to.indeed.com/aa2z8d2j92wx" target="_blank" class="job ej" data-tags="tech gbg ej"><div class="job-info"><div class="job-title">Junior Supporttekniker</div><div class="job-company">Friday Väst AB — Annons utgången. Kolla friday.se direkt + Mac-CV</div></div><div class="tags"><span class="tag tag-ej">EJ AKTUELL</span><span class="tag tag-tech">Support</span><span class="tag tag-gbg">Göteborg</span></div><span class="arrow">→</span></a>
+  <a href="https://to.indeed.com/aaprxcd6wjdn" target="_blank" class="job ej" data-tags="tech gbg ej"><div class="job-info"><div class="job-title">IT-supporttekniker Onsite</div><div class="job-company">Techfactory — Annons borttagen (404)</div></div><div class="tags"><span class="tag tag-ej">EJ AKTUELL</span><span class="tag tag-tech">IT Support</span><span class="tag tag-gbg">Göteborg</span></div><span class="arrow">→</span></a>
+  <a href="https://to.indeed.com/aa6bm87fb46v" target="_blank" class="job ej" data-tags="tech gbg ej"><div class="job-info"><div class="job-title">Technical Services Specialist</div><div class="job-company">Johnson Controls — Mölndal — Brandskyddsingenjör, fel domän</div></div><div class="tags"><span class="tag tag-ej">EJ AKTUELL</span><span class="tag tag-tech">Tech</span><span class="tag tag-gbg">Mölndal</span></div><span class="arrow">→</span></a>
+  <a href="https://to.indeed.com/aam8hn4629s4" target="_blank" class="job ej" data-tags="tech gbg ej"><div class="job-info"><div class="job-title">EDI / Integration Developer</div><div class="job-company">Hultafors Group — Kräver 3-5 år EDI/EDIFACT, CS-examen</div></div><div class="tags"><span class="tag tag-ej">EJ AKTUELL</span><span class="tag tag-tech">Dev</span><span class="tag tag-gbg">Göteborg</span></div><span class="arrow">→</span></a>
+  <a href="https://arbetsformedlingen.se/platsbanken/annonser/30638779" target="_blank" class="job ej" data-tags="tech ej"><div class="job-info"><div class="job-title">Frontendutvecklare med intresse för Python</div><div class="job-company">Svenska Kraftnät — Sundbyberg (EJ Göteborg), React-krav, deadline passerad 23 mars</div></div><div class="tags"><span class="tag tag-ej">EJ AKTUELL</span><span class="tag tag-tech">Python</span></div><span class="arrow">→</span></a>
 </ul>
 
 <!-- GÖTEBORG KOMMUNIKATION -->
 <div class="section-label">Göteborg — Kommunikation / Content</div>
 <ul class="job-list">
-  <a href="https://to.indeed.com/aarvfjpr6tvg" target="_blank" class="job" data-tags="komm gbg"><div class="job-info"><div class="job-title">Marknadskommunikatör</div><div class="job-company">Frico AB</div></div><div class="tags"><span class="tag tag-komm">Marknad</span><span class="tag tag-gbg">Göteborg</span></div><span class="arrow">→</span></a>
-  <a href="https://to.indeed.com/aahvlyp8zct2" target="_blank" class="job" data-tags="komm gbg"><div class="job-info"><div class="job-title">Marketing & Content Manager</div><div class="job-company">Outnorth AB</div></div><div class="tags"><span class="tag tag-komm">Content</span><span class="tag tag-gbg">Göteborg</span></div><span class="arrow">→</span></a>
-  <a href="https://to.indeed.com/aacb9p4lljyx" target="_blank" class="job" data-tags="komm gbg"><div class="job-info"><div class="job-title">Content Creator & Creative Account Manager</div><div class="job-company">InReach Marketing AB</div></div><div class="tags"><span class="tag tag-komm">Content</span><span class="tag tag-gbg">Göteborg</span></div><span class="arrow">→</span></a>
+  <a href="https://to.indeed.com/aarvfjpr6tvg" target="_blank" class="job done" data-tags="komm gbg done"><div class="job-info"><div class="job-title">Marknadskommunikatör</div><div class="job-company">Frico AB — Score: 3.5/5 — Journalist+Adobe stark, gap B2B/analys</div></div><a href="reports/009-frico.html" class="report-link" onclick="event.stopPropagation()">📋 Rapport</a><div class="tags"><span class="tag tag-done">UTVÄRDERAD 3.5</span><span class="tag tag-urgent">⚠️ 30 APR</span><span class="tag tag-komm">Marknad</span><span class="tag tag-gbg">Göteborg</span></div><span class="arrow">→</span></a>
+  <a href="https://to.indeed.com/aahvlyp8zct2" target="_blank" class="job ej" data-tags="komm gbg ej"><div class="job-info"><div class="job-title">Marketing & Content Manager</div><div class="job-company">Outnorth AB — Manager-roll, leder kreativt team, kräver kampanjledarerfarenhet</div></div><div class="tags"><span class="tag tag-ej">EJ AKTUELL</span><span class="tag tag-komm">Content</span><span class="tag tag-gbg">Göteborg</span></div><span class="arrow">→</span></a>
+  <a href="https://to.indeed.com/aacb9p4lljyx" target="_blank" class="job ej" data-tags="komm gbg ej"><div class="job-info"><div class="job-title">Content Creator & Creative Account Manager</div><div class="job-company">InReach Marketing AB — Utgången + deltid 15-25h + foto/video-fokus</div></div><div class="tags"><span class="tag tag-ej">EJ AKTUELL</span><span class="tag tag-komm">Content</span><span class="tag tag-gbg">Göteborg</span></div><span class="arrow">→</span></a>
 </ul>
 
 <!-- REMOTE -->
 <div class="section-label">Remote / EMEA — Tech / Support</div>
 <ul class="job-list">
+  <a href="https://jobs.ashbyhq.com/camunda/1810625c-4515-4260-997e-ee25ac11bdfd" target="_blank" class="job" data-tags="tech remote"><div class="job-info"><div class="job-title">Technical Support Engineer - EMEA</div><div class="job-company">Camunda — Fully remote, agentic automation-plattform</div></div><div class="tags"><span class="tag tag-tech">Support</span><span class="tag tag-remote">Remote</span></div><span class="arrow">→</span></a>
+  <a href="https://job-boards.greenhouse.io/gitlab/jobs/7846483002" target="_blank" class="job" data-tags="tech remote"><div class="job-info"><div class="job-title">Support Engineer (EMEA)</div><div class="job-company">GitLab — All-remote, DevOps-plattform, Linux-krav</div></div><div class="tags"><span class="tag tag-tech">Support</span><span class="tag tag-remote">Remote</span></div><span class="arrow">→</span></a>
+  <a href="https://job-boards.greenhouse.io/gitlab/jobs/8324426002" target="_blank" class="job" data-tags="tech remote"><div class="job-info"><div class="job-title">Associate Support Engineer (EMEA)</div><div class="job-company">GitLab — Lägre krav, bra insteg, all-remote</div></div><div class="tags"><span class="tag tag-tech">Junior</span><span class="tag tag-remote">Remote</span></div><span class="arrow">→</span></a>
+  <a href="https://jobs.lever.co/jobandtalent/4a9582cc-0c30-4189-9c51-47703be8779b" target="_blank" class="job" data-tags="tech remote"><div class="job-info"><div class="job-title">Product Support Lead (EMEA Remote)</div><div class="job-company">Jobandtalent — Intern produktsupport, leadroll</div></div><div class="tags"><span class="tag tag-tech">Lead</span><span class="tag tag-remote">Remote</span></div><span class="arrow">→</span></a>
   <a href="https://jobs.ashbyhq.com/horizon3ai/eaf4c475-fe44-45ef-b35a-9eee3795984b" target="_blank" class="job" data-tags="tech remote"><div class="job-info"><div class="job-title">Technical Support Engineer, EMEA (Python!)</div><div class="job-company">Horizon3 AI — Kräver Python, extra relevant</div></div><div class="tags"><span class="tag tag-tech">Python</span><span class="tag tag-remote">Remote</span></div><span class="arrow">→</span></a>
   <a href="https://jobs.ashbyhq.com/zapier/b5f9461d-1a4e-456b-8cfd-bc88ee4cb7da" target="_blank" class="job" data-tags="tech remote"><div class="job-info"><div class="job-title">Support Systems Engineer</div><div class="job-company">Zapier — Bygga verktyg, inte bara support</div></div><div class="tags"><span class="tag tag-tech">Automation</span><span class="tag tag-remote">Remote</span></div><span class="arrow">→</span></a>
   <a href="https://jobs.ashbyhq.com/n8n/1d732234-b364-4c5c-b4fd-ae584e0b7992" target="_blank" class="job" data-tags="tech remote"><div class="job-info"><div class="job-title">Senior Support Engineer - Europe Remote</div><div class="job-company">n8n — Workflow automation</div></div><div class="tags"><span class="tag tag-tech">Automation</span><span class="tag tag-remote">Remote EU</span></div><span class="arrow">→</span></a>
@@ -296,7 +378,7 @@
   <a href="https://jobs.lever.co/wingtra-2/118c65ff-1b95-49e5-8226-661fbfc9f196" target="_blank" class="job" data-tags="tech remote"><div class="job-info"><div class="job-title">Junior Technical Support Specialist EMEA</div><div class="job-company">Wingtra</div></div><div class="tags"><span class="tag tag-tech">Junior</span><span class="tag tag-remote">EMEA</span></div><span class="arrow">→</span></a>
 </ul>
 
-<footer>career-ops pipeline — Uppdaterad 2026-04-11 — 8 nya jobb, 2 utgångna markerade</footer>
+<footer>career-ops pipeline — Uppdaterad 2026-04-16 — 3 nya jobb: Kriminalvården 2nd line (🔥), Your Talent IT-tekniker, Empir AV-support vikariat</footer>
 
 <script>
 function filterJobs(tag) {

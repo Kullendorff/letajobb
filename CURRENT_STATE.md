@@ -80,10 +80,20 @@ C:\AI\hittajobb\
 ├── CLAUDE.md                           # Projektinstruktioner
 ├── CURRENT_STATE.md                    # Denna fil
 ├── pipeline.html                       # Chrome-startsida, jobbpipeline
-├── 001-lansstyrelsen-vgr.html          # Rapport: strategisk kommunikatör
-├── 002-experis-trafikverket.html       # Rapport: IT-tekniker
-├── 003-lansstyrelsen-webbredaktor.html # Rapport: webbredaktör
-├── 004-afry-teknikinformator.html      # Rapport: teknikinformatör
+├── reports/                            # HTML-utvärderingsrapporter (gitignored)
+│   ├── 001-lansstyrelsen-vgr.html
+│   ├── 002-experis-trafikverket.html
+│   ├── 003-lansstyrelsen-webbredaktor.html
+│   ├── 004-afry-teknikinformator.html
+│   ├── 005-carboncloud.html
+│   ├── 006-linden-it.html
+│   ├── 007-experis-servicedesk.html
+│   ├── 008-akkodis.html
+│   └── 009-frico.html
+├── af-mcp/                             # Platsbanken-scanner + MCP-server
+│   ├── server.py                       # MCP-server (4 verktyg: sok_jobb, hamta_annons, ...)
+│   ├── scan.py                         # Batch-scanner med titelfiltrering
+│   └── requirements.txt
 ├── Johan_Kullendorff_CV_Avinode.pdf    # CV (EN)
 ├── Johan_Kullendorff_CV_Friday_Mac.pdf # CV (SV, IT-support)
 ├── Johan_Kullendorff_CV_Sway.pdf       # CV (SV, incident mgmt)
