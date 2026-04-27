@@ -9,9 +9,10 @@ career-ops/config/profile.yml
 # Context file (personnummer, fullständig historik)
 career-ops/johan_kontext_claude_code.md
 
-# CV-filer (alla format)
+# CV-filer (alla format - PDF, DOCX)
 career-ops/cv.md
 *.pdf
+*.docx
 
 # Generated output (CV:n, personliga brev)
 career-ops/output/
@@ -22,6 +23,9 @@ career-ops/reports/
 # HTML-rapporter (persondata — hela mappen ignoreras)
 reports/
 
+# Lokala Claude Code-inställningar
+.claude/
+
 # Python cache
 __pycache__/
 *.pyc
@@ -31,6 +35,11 @@ __pycache__/
 # OS files
 .DS_Store
 Thumbs.db
+
+# LibreOffice tempfiler och låsfiler
+.~lock.*
+*.tmp
+lu*.tmp
 
 # Environment
 .env
