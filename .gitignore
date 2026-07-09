@@ -1,0 +1,56 @@
+# Dependencies
+career-ops/node_modules/
+
+# === PERSONDATA (PII) ===
+
+# Personal config (phone, email, salary)
+career-ops/config/profile.yml
+
+# Context file (personnummer, fullständig historik)
+career-ops/johan_kontext_claude_code.md
+
+# CV-filer (alla format - PDF, DOCX)
+career-ops/cv.md
+*.pdf
+*.docx
+
+# Generated output (CV:n, personliga brev)
+career-ops/output/
+
+# Utvärderingsrapporter med kontaktuppgifter
+career-ops/reports/
+
+# Sekretessregler (NDA m.m.) - FÅR ALDRIG COMMITTAS
+CLAUDE.local.md
+
+# Personliga brev/CV i alla format (fångar även .txt)
+Johan_Kullendorff_*
+
+# Pipeline-backuper och forensik
+pipeline.html.bak*
+pipeline.html.corrupted
+
+# HTML-rapporter (persondata - hela mappen ignoreras)
+reports/
+
+# Lokala Claude Code-inställningar
+.claude/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# === ÖVRIGT ===
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# LibreOffice tempfiler och låsfiler
+.~lock.*
+*.tmp
+lu*.tmp
+
+# Environment
+.env
+.env.*

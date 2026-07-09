@@ -1,0 +1,244 @@
+# Hittajobb — Johans jobbsökningsprojekt
+
+## Syfte
+AI-assisterad jobbsökning med career-ops som pipeline-motor.
+
+## Struktur
+- `career-ops/` — Klonad från santifer/career-ops, anpassad för Johan
+- `Johan_Kullendorff_CV_Avinode.pdf` — CV (EN), Technical Support + API & Documentation
+- `Johan_Kullendorff_CV_Friday_Mac.pdf` — CV (SV), IT-Supporttekniker, Mac & Windows
+- `Johan_Kullendorff_CV_Sway.pdf` — CV (SV), Application Support, Incident Management
+- `johan_kontext_claude_code.md` — Johans fullständiga kontextfil
+
+## Kandidatprofil (snabbref)
+- **Johan Kullendorff**, Göteborg, 49 år
+- Senior Technical Advisor på Concentrix med specialisering inom Apples ekosystem, 2020–nu
+- Journalist/redigerare-bakgrund (6+ år)
+- Självlärd Python/Flask/API-utvecklare
+- Söker BRETT: support, IT, Python dev, automation, kommunikatör, kundsuccess SaaS, hybrid tech+komm
+- Göteborg primärt, remote/hybrid öppet
+
+## Sekretessregler (KRITISKT)
+**Läs `CLAUDE.local.md` FÖRST innan CV, brev eller publika dokument skrivs.** Den filen innehåller bindande formuleringsregler kring Johans nuvarande uppdrag och är gitignorerad av en anledning: innehållet får aldrig hamna i detta publika repo, i commits eller i publika dokument.
+
+## Career-ops
+Kör `/career-ops` i career-ops-mappen för alla kommandon.
+Alla personliga anpassningar: `career-ops/config/profile.yml` + `career-ops/modes/_profile.md`
+
+## HTML-output (VIKTIGT)
+- `pipeline.html` — jobbpipeline med filter, statusmarkeringar och rapportlänkar. **Johans startsida i Chrome.** Ligger i hittajobb-roten.
+- `reports/{NNN}-{företag}.html` (t.ex. `reports/001-lansstyrelsen-vgr.html`) — utvärderingsrapporter per jobb, i undermappen `reports/`
+- Markdown-versioner sparas även i `career-ops/reports/` för career-ops-systemet
+- **Efter varje utvärdering:** spara HTML-rapporten i `reports/`, uppdatera pipeline.html med status "UTVÄRDERAD" + länk `reports/NNN-slug.html`
+- **Efter varje scan:** uppdatera pipeline.html med nya jobb
+- **Använd ALLTID å ä ö** — aldrig ASCII-ersättningar i svenska texter
+- Rapporternas HTML har mörkt tema, scorecard, STAR-historier, personligt brev, ATS-keywords
+- Rapporter länkas tillbaka till pipeline.html via footer med `../pipeline.html` (ett steg upp från reports/)
+
+## Pipeline.html design (VIKTIGT)
+- **4 sektioner i ordning:** ✅ Ansökta, 📋 Att söka NU (sorterbar tabell), 📋 Utvärderade (kort), 🔍 Ovärderade, ❌ Ej aktuella
+- **"Att söka NU"-tabell** efter ANSÖKTA-sektionen, listar alla utvärderade-icke-ansökta-icke-EJ-AKTUELLA jobb
+- Tabellen är **sorterbar** - klick på kolumnrubrik (Score / Deadline / Lokation / Företag) togglar sortering
+- Default-sortering: Score DESC
+- Varje rad har **två knappar**: 🔗 Ansök (direktlänk till annonsen) + 📋 [nr] (länk till rapporten)
+- Deadline-celler färgkodade: röd (`deadline-urgent`) ≤ 7 dagar, orange (`deadline-warn`) ≤ 21 dagar, grön (`deadline-ok`) > 21 dagar
+- Stats i headern: jobb totalt / ansökta / utvärderade / nya / ej aktuella
+- Filter-knappar: Alla / Ansökta / Utvärderade / Nya / Göteborg / Remote / Komm / Tech / Ej aktuella
+
+## Pipeline.html kortformat (OBLIGATORISKT)
+Alla jobb-kort i pipeline.html MÅSTE följa samma struktur. Inga undantag.
+
+**Ansökta kort** (`class="job applied"`):
+```html
+<a href="{url}" target="_blank" class="job applied" data-tags="{tags} applied">
+  <div class="job-info">
+    <div class="job-title">{titel}</div>
+    <div class="job-company">{företag} - {meta}</div>
+  </div>
+  <div class="tags">
+    <span class="tag tag-applied">ANSÖKT ✓</span>
+    <span class="tag tag-tech">...</span>
+    <span class="tag tag-gbg">Göteborg</span>
+  </div>
+  <a href="reports/{nr}-{slug}.html" class="report-link" onclick="event.stopPropagation()">📋 Rapport</a>  <!-- om rapport finns -->
+  <span class="arrow">→</span>
+</a>
+```
+
+**Utvärderade kort** (`class="job done"`):
+```html
+<a href="{url}" target="_blank" class="job done" data-tags="{tags} utvärderad">
+  <div class="job-info">
+    <div class="job-title">{titel}</div>
+    <div class="job-company">{företag} - Score: {x}/5</div>
+  </div>
+  <div class="tags">
+    <span class="tag tag-done">UTVÄRDERAD</span>
+    <span class="tag tag-tech">...</span>
+    <span class="tag tag-gbg">Göteborg</span>
+  </div>
+  <a href="reports/{nr}-{slug}.html" class="report-link" onclick="event.stopPropagation()">📋 Rapport</a>
+  <span class="arrow">→</span>
+</a>
+```
+
+**Ovärderade kort** (`class="job"`):
+```html
+<a href="{url}" target="_blank" class="job" data-tags="{tags}">
+  <div class="job-info">
+    <div class="job-title">{titel}</div>
+    <div class="job-company">{företag} - {lokation}</div>
+  </div>
+  <div class="tags">
+    <span class="tag tag-tech">...</span>
+    <span class="tag tag-gbg">Göteborg</span>
+  </div>
+  <span class="arrow">→</span>
+</a>
+```
+
+**Ej aktuella kort** (`class="job ej"`):
+```html
+<a href="{url}" target="_blank" class="job ej" data-tags="{tags} ej">
+  <div class="job-info">
+    <div class="job-title">{titel}</div>
+    <div class="job-company">{företag} - EJ AKTUELL: {orsak}</div>
+  </div>
+  <div class="tags">
+    <span class="tag tag-ej">EJ AKTUELL</span>
+    <span class="tag tag-tech">...</span>
+  </div>
+  <span class="arrow">→</span>
+</a>
+```
+
+**data-tags konvention** - MÅSTE matcha filterknapparna:
+- `applied` (inte "ansökt") - filterknappen söker `applied`
+- `utvärderad` - filterknappen söker `utvärderad`
+- `ej` - filterknappen söker `ej`
+- `tech`, `komm`, `gbg`, `remote` - kategoritaggar
+
+## Pipeline.html redigeringsregler (KRITISKT, uppdaterade efter incidenten 2026-07-09)
+**All säkerhetslogik finns i `af-mcp/pipeline_lib.py`** - backup, atomisk skrivning, verifiering, räknarsynk. Använd den, uppfinn inte egna varianter.
+
+1. **Edit-verktyget rör ALDRIG pipeline.html.** Inte för strukturändringar, inte för räknare, inte för en enstaka note. Alla ändringar går via Python-skript i bash som använder pipeline_lib (`backup_pipeline` + `safe_write`). Detta löser också Windows/Linux-synkproblemet: bara bash skriver till filen.
+2. **Backup tas automatiskt** av `backup_pipeline()` (behåller de 5 senaste `pipeline.html.bak.YYYYMMDD_HHMMSS`). Egna skript MÅSTE anropa den före ändring.
+3. **`safe_write()` är enda tillåtna skrivvägen** - skriver till tempfil, verifierar (slutar med `</html>`, alla sektionsmarkörer finns exakt en gång, inga dubblett-URL:er, förväntat jobbantal), byter atomiskt. Den kastar fel istället för att skriva trasigt.
+4. **Verifiera efter varje ändring:** `python3 af-mcp/verify.py` - kontrollerar struktur och att räknarna matchar korten. `--sync` rättar osynkade räknare (med egen backup).
+5. **Räknare handredigeras ALDRIG.** De beräknas från korten via `sync_counters()` / `verify.py --sync`. Definitioner: ansökta = `class="job applied"`, utvärderade = `class="job done"`, ovärderade/nya = `class="job"`, ej aktuella = `class="job ej"`. Totalt = summan. Synkas på alla ställen samtidigt (stats-header, filterknappar, sektionsrubriker, footer).
+6. **Scan-sektioner (`<!-- NYA JOBB -->`) FÅR INTE FINNAS.** Sedan 2026-07-09 infogar scan.py nya jobb direkt i Ovärderade-sektionen. Om en `<!-- NYA JOBB` dyker upp i filen har något gått fel - stoppa och utred, radera inte.
+7. **Sektionsmarkörerna `<!-- ANSÖKTA -->`, `<!-- ATT SÖKA NU -->`, `<!-- UTVÄRDERADE -->`, `<!-- OVÄRDERADE -->`, `<!-- EJ AKTUELLA -->` är strukturella ankare** som pipeline_lib navigerar efter. Får aldrig tas bort eller dubbleras.
+8. **Obevakade körningar (schemalagda tasks) får ALDRIG improvisera fix-skript** mot pipeline.html. Vid fel: rapportera till Johan, rör ingenting. Det var ett improviserat fix-skript kl 05 som orsakade incidenten 2026-07-09.
+
+## Verifiera deadlines och status (VIKTIGT)
+- Innan utvärdering eller "Att söka NU"-listning: **kolla att jobbet är öppet**
+- Platsbanken-jobb (`arbetsformedlingen.se/platsbanken/annonser/{id}`): hämta via API `https://jobsearch.api.jobtechdev.se/ad/{id}` - returnerar deadline + apply URL
+- Indeed-länkar (`to.indeed.com/...`): kan vara expired - öppna i Chrome och leta efter "jobbet har gått ut"
+- Annars-länkar (Greenhouse, Ashby, Teamtailor, Workable): kan vara JS-renderade - använd företagets job-board API om sådan finns, annars Chrome MCP
+- **Om jobb visat sig stängt:** markera som EJ AKTUELL i pipelinen med text "tjänsten har gått ut (verifierad YYYY-MM-DD)"
+- **Om deadline okänd eller "verifiera":** lös detta innan jobbet hamnar i "Att söka NU"-tabellen
+- Äldre Indeed-jobb (>7 dagar): verifiera proaktivt om de fortfarande är värda att rekommendera
+
+## EJ AKTUELL-flow (VIKTIGT)
+Jobb som är "EJ AKTUELL" SKA stanna i pipeline.html (med `class="job ej"` + `tag tag-ej`) eftersom:
+- Scannern (`af-mcp/scan.py`) läser pipeline.html för kända IDs och hoppar över dem nästa scan
+- Visuellt nedtonade (CSS `opacity: 0.4`) men sökbara via filter "Ej aktuella"
+- Plus extra dubbel-spårning: lägg till rad i `career-ops/data/scan-history.tsv` med status `skipped-not-actual`
+
+Vanliga EJ AKTUELL-orsaker att flagga tydligt i note-text:
+- **Geografi-mismatch:** "tjänsten är i Norrköping/Stockholm/Linköping (inte Göteborg)"
+- **Mandatory-krav saknas:** "kräver 5+ års X" / "PhD i Y" / "PLC-programmering" / "10 års strategisk kommunikation"
+- **3-skift / visstid / villkor:** "3-skift rullande schema + visstid - dåligt fit"
+- **Tjänsten tillsatt:** "verifierad expired YYYY-MM-DD"
+
+## Johans skrivstil (OBLIGATORISKT före CV/brev)
+Innan du skriver CV eller personligt brev:
+1. Hämta Johans skrivstilsanalys från Google Drive: sök `title contains 'skrivstil'` via google_drive_search, läs dokumentet
+2. Anpassa ton, ordval och meningsbyggnad efter analysen:
+   - Kort och direkt, inte blommigt
+   - Ärlighet om gap, inga bortförklaringar
+   - Parentetisk humor och ironi där det passar
+   - Varierad meningslängd, inte robotmässigt jämn
+   - Inga corporatefloskler eller överdrifter
+   - Johans favorituttryck OK att använda sparsamt ("med all önskvärd tydlighet", "facit i hand", etc.)
+3. Efter skrivning: läs igenom och fråga "skulle Johan ha skrivit det här?" - om svaret är nej, skriv om
+
+## AI-marker scan (OBLIGATORISKT före leverans)
+Efter att CV och brev skapats, kör regex-scan PLUS manuell läsning för att fånga AI-trigger-formuleringar:
+
+Regex-flaggor (i ordning):
+```
+em-dash:          — (em-dash ALDRIG. en-dash – är ok om den används sparsamt, flagga bara vid överanvändning)
+"spännande":      \bspännande\b
+"genuint intresse": \bgenuint intresse\b
+"lösningsorienterad", "resultatdriven", "passionerad", "brinner för", "min passion"
+"perfekt blandning", "naturlig fortsättning", "i en alltmer", "i en värld där"
+"säkerställa att", "värt att notera", "världsledande"
+"I'm thrilled", "passionate about", "leverage", "synergy", "spearhead"
+```
+
+Manuell trippelkoll (efter regex):
+- Repetitiva meningsstartar
+- Triadiska adjektivlistor ("kompetens, engagemang och driv")
+- "Inte bara X utan också Y"-konstruktioner
+- För perfekt struktur (varje stycke exakt 3 meningar)
+- Kliché-formuleringar som inte säger något konkret ("matchar min utvecklingsriktning")
+- Hyperlativer utan konkret backup
+
+## Platsbanken-scanner
+`af-mcp/scan.py` söker Platsbanken (Arbetsförmedlingens API) och uppdaterar pipeline-filerna.
+
+```
+python af-mcp/scan.py              # senaste 7 dagarna
+python af-mcp/scan.py --days 14    # senaste 14 dagarna
+python af-mcp/scan.py --dry-run    # visa resultat utan att skriva filer
+python af-mcp/scan.py --no-filter  # skippa titelfiltrering (debugging)
+```
+
+Scannern filtrerar träffar mot titelfiltret i `career-ops/portals.yml` (90 positiva, 40 negativa termer).
+
+### Sökfrågor (SEARCHES i scan.py)
+Ursprungliga 13 frågor + breddning 2026-06-04 i två steg:
+- Steg 1: customer success (Gbg+remote), customer support specialist (remote), onboarding (remote), integration (Gbg), API (Gbg)
+- Steg 2: IT-koordinator, systemadministratör, technical writer, teknisk skribent, application specialist (alla Gbg), solutions engineer + technical account manager (remote)
+Totalt 27 sökfrågor.
+
+Negativfilter utökades med 14 brusfilter-termer: Postdoc, Post-doc, Post-doctoral, PhD, Doktorand, Konstruktör, Beredare, Servicetekniker, Fältservice, Elektriker, Mekaniker, Svetsare, Montör, Hårdvaru
+Uppdaterar: `pipeline.html`, `career-ops/data/pipeline.md`, `career-ops/data/scan-history.tsv`
+
+### Säkerhetslager (nytt 2026-07-09)
+- `af-mcp/pipeline_lib.py` - backup, atomisk skrivning (`safe_write`), verifiering, räknarsynk, `insert_new_jobs` (lägger nya kort i Ovärderade-sektionen)
+- `af-mcp/verify.py` - fristående kontroll: `python3 af-mcp/verify.py` (läge: check) eller `--sync` (rättar räknare)
+- `af-mcp/rebuild.py` - engångsmigrationen som flyttade in scan-sektionerna 2026-07-09; kan återanvändas som full ombyggnad om strukturen skadas igen
+- scan.py tar backup, skriver atomiskt och verifierar. Vid fel: avbryter utan att skriva.
+
+## CV per jobb (OBLIGATORISKT)
+- **Skapa ALLTID ett dedikerat CV för varje jobb Johan söker**, även om det är 99% återanvändning av ett befintligt CV
+- Spara som `Johan_Kullendorff_CV_{företag}.pdf` (eller .docx) via career-ops PDF-generering
+- Justera minst: titel, profil-stycke, och 2-3 rader i kompetenser/erfarenhet så de speglar annonsens ord
+- Detta gäller även snabba ansökningar - inget mer "återanvänder Friday_Mac som den är"
+- Logga vilket CV som skickades i pipeline.html-noten (t.ex. "Ansökt 2026-04-22, CV: Akkodis-variant")
+
+## Generera CV och brev (workflow)
+- Pipeline finns i `outputs/generate_apps.py` (eller `generate_round2.py` för senare rundor) - Python-skript som tar profilen + variant-specifik info och bygger .docx via python-docx
+- Skapas: `Johan_Kullendorff_CV_{key}.docx` och `Johan_Kullendorff_Brev_{key}.docx` i hittajobb-roten
+- Konvertera till PDF via `libreoffice --headless --convert-to pdf {fil}.docx --outdir .`
+- **Båda format levereras** - .docx för redigering, .pdf för uppladdning
+- Dela ut via `computer://C:\AI\hittajobb\{filnamn}.pdf`-länkar
+- Edit-tool och bash-tool ser olika filsystem-paths (Windows fil vs Linux mount). Om syntaxfel uppstår vid bash-körning: skriv om hela filen via `cat > /sessions/.../mnt/outputs/script.py << 'PYEOF' ... PYEOF`
+
+## Chrome-flöde för ansökningar
+- Öppna annonsen i Chrome MCP, identifiera ansökningssättet:
+  - **Mail (info@xxx.se):** öppna Gmail-utkast med to+subject+body pre-fyllt via URL-params (`https://mail.google.com/mail/u/0/?fs=1&tf=cm&to=...&su=...&body=...`)
+  - **Webbformulär:** scrolla, identifiera fält via `find`, fyll i namn/mejl/telefon, klistra in brev i cover letter-textbox där sådan finns
+  - **Eccera/Akkodis (Zerolime/recman):** Johan har redan konton, lösenord-baserad inloggning kräver att Johan själv loggar in (säkerhetsregel)
+- **File upload (CV/brev) blockeras av Chrome MCP säkerhetsregler** - Johan måste själv klicka 📎 paperclip eller 'upload'-knappen och välja PDF:erna
+- Stanna ALLTID innan submit/send. Per `feedback_jobbsok_workflow.md`: aldrig tryck "skicka"
+- Cookie-banners: välj alltid "Avvisa alla" / mest privacy-bevarande automatiskt
+
+## Principer
+- Ärlig, konkret ton, inget corporatespeak
+- Anpassa CV-variant efter roll (3 befintliga + career-ops PDF-generering + nya per-jobb-varianter)
+- Johan är i akut jobbsökarläge, bred sökning, inte bara drömroller
+- Aldrig em-dash (—) i text. En-dash (–) är ok men sparsamt (Johan använder den ibland själv). Vanligt bindestreck (-) duger oftast
+- **Inga rapporter för ohjälpliga jobb** - om mandatory-krav saknas, markera EJ AKTUELL direkt och gå vidare
