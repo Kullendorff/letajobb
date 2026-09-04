@@ -7,7 +7,7 @@ personligt jobbsök men är städat till en återanvändbar mall — se README.m
 ## Struktur
 - `career-ops/` — Klonad från santifer/career-ops, anpassad för svensk arbetsmarknad
 - `{Ditt_Namn}_CV_{variant}.pdf` — CV-varianter per roll/bolag (gitignored, dina egna filer)
-- `career-ops/johan_kontext_claude_code.md` → byt namn/skriv en egen `{namn}_kontext_claude_code.md` — din fullständiga kontextfil (gitignored)
+- `career-ops/{ditt_namn}_kontext_claude_code.md` — din fullständiga kontextfil (gitignored, skapa själv vid behov)
 
 ## Kandidatprofil (snabbref)
 Fyll i din egen profil här, t.ex.:
