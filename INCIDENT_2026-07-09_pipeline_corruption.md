@@ -48,16 +48,17 @@ Jobb från scan.py hamnade i separata `<!-- NYA JOBB -->` sektioner istället f�
 
 ## Saknade data (ej återställda)
 
-6 ansökta kort som lades till mellan 2026-06-26 och 2026-07-09:
+6 ansökta kort som lades till mellan 2026-06-26 och 2026-07-09 (företagsnamn borttagna/generaliserade
+här, listan är bara till för att illustrera dataförlustens omfattning):
 
-| Titel | Företag | URL (trunkerad) |
+| Titel | Företag (exempel) | URL (trunkerad) |
 |-------|---------|-----------------|
-| Kommunikatör (vikariat) | Västra Götalandsregionen | vgregion.varbi.com/...949774 |
-| 2nd line-tekniker | Eccera Professionals | eccerapse.recman.page/job/479209 |
-| 2nd Line Technician | ? (Indeed) | se.indeed.com/...jk=3a2835e5ed071b54 |
-| IT Technician, First Line | ? (Indeed) | se.indeed.com/...jk=89c33b3621f8eb78 |
-| IT Support Technician | Hedin IT | career.hedinit.com/jobs/7976892 |
-| IT Supporttekniker 1st line | Infracom | rekrytering.infracom.se/jobs/7754087 |
+| Kommunikatör (vikariat) | Regionexempel | exempelregion.varbi.com/...xxxxx |
+| 2nd line-tekniker | Rekryteringsbolag A | exempel.recman.page/job/xxxxxx |
+| 2nd Line Technician | ? (Indeed) | se.indeed.com/...jk=xxxxxxxxxxxxxxxx |
+| IT Technician, First Line | ? (Indeed) | se.indeed.com/...jk=xxxxxxxxxxxxxxxx |
+| IT Support Technician | IT-bolag B | career.exempel.com/jobs/xxxxxxx |
+| IT Supporttekniker 1st line | IT-bolag C | rekrytering.exempel.se/jobs/xxxxxxx |
 
 Dessa sex jobb finns i "Att söka NU"-tabellen men saknar ansökta-kort i Ansökta-sektionen. Användaren hade pre-korruptionsversionen öppen i Chrome vid tillfället.
 

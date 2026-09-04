@@ -36,11 +36,18 @@ def backup_pipeline(path: Path) -> Path:
     stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     bak = path.with_name(f"{path.name}.bak.{stamp}")
     bak.write_bytes(path.read_bytes())
-    # Gallra: behåll de KEEP_BACKUPS senaste tidsstämplade backuperna
+    # Gallra: behåll de KEEP_BACKUPS senaste tidsstämplade backuperna.
+    # OBS: C:\AI\hittajobb är en Cowork-skyddad mapp där filer inte får
+    # raderas efter skrivning - unlink() ger PermissionError där. Vi
+    # försöker ändå (funkar om spärren lättar eller körs utanför Cowork),
+    # men ett misslyckat unlink får ALDRIG stoppa hela skrivningen.
     pattern = re.compile(re.escape(path.name) + r"\.bak\.\d{8}_\d{6}$")
     baks = sorted(p for p in path.parent.iterdir() if pattern.match(p.name))
     for old in baks[:-KEEP_BACKUPS]:
-        old.unlink()
+        try:
+            old.unlink()
+        except OSError:
+            pass
     return bak
 
 

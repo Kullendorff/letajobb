@@ -4,67 +4,75 @@ AI-assisterad jobbsökning med pipeline-tänk. Byggt för att hålla koll på et
 
 ## Vad det här är
 
-En jobbsökningspipeline som skannar svenska och internationella jobbportaler, utvärderar roller mot min profil, och samlar allt i en filtrerad HTML-vy. Tänk CRM, fast för den som *söker* jobbet istället för den som säljer.
+En jobbsökningspipeline som skannar svenska och internationella jobbportaler, utvärderar roller mot din profil, och samlar allt i en filtrerad HTML-vy. Tänk CRM, fast för den som *söker* jobbet istället för den som säljer.
 
-Bygger på [career-ops](https://github.com/santifer/career-ops) av [@santifer](https://github.com/santifer), som skapades för en helt annan jobbmarknad och rolltyp. Det här är en svensk fork, omskriven för svenska jobbportaler (Platsbanken, Indeed Sverige, Teamtailor m.fl.), svensk arbetsmarknad, och en bredare profil som spänner från teknisk support till kommunikatörsroller. Pipeline-vyn, utvärderingssystemet och portalskonfigurationen är egna tillägg.
+Bygger på [career-ops](https://github.com/santifer/career-ops) av [@santifer](https://github.com/santifer), som skapades för en helt annan jobbmarknad och rolltyp. Det här är en svensk fork, omskriven för svenska jobbportaler (Platsbanken, Indeed Sverige, Teamtailor m.fl.), svensk arbetsmarknad, och en bred profil som kan spänna från teknisk support till kommunikatörsroller. Pipeline-vyn, utvärderingssystemet och portalskonfigurationen är egna tillägg.
+
+## Bakgrund
+
+Det här var ursprungligen mitt eget, faktiska jobbsök — inte ett demoprojekt från början. Jag hittade jobb och behöver inte längre verktyget aktivt, men lämnar det kvar och städat som en fungerande mall åt andra som söker jobb och vill ha samma typ av AI-assisterad pipeline. All min egen ansökningsdata är borttagen från repot (se `.gitignore`) — det du ser här är antingen generisk mall-kod eller påhittad exempeldata.
 
 ## Hur det fungerar
 
-**Skanning:** Söker igenom LinkedIn, Platsbanken, Indeed, Greenhouse, Ashby, Lever, Teamtailor och Workable efter roller som matchar. Portaler och sökfrågor är konfigurerade för den svenska marknaden plus remote/EMEA-roller hos internationella tech-bolag. Allt i `portals.yml`.
+**Skanning:** Söker igenom LinkedIn, Platsbanken, Indeed, Greenhouse, Ashby, Lever, Teamtailor och Workable efter roller som matchar. Portaler och sökfrågor konfigureras per användare i `career-ops/portals.yml` (kopiera från `career-ops/templates/portals.example.yml`).
 
-**Pipeline:** Alla hittade jobb hamnar i `pipeline.html` — en dark-mode dashboard med filter för kategori, plats, status och urgency. Varje jobb taggas (tech/komm, Göteborg/remote, ny/utvärderad/utgången) och kan klickas igenom till originalannonsen.
+**Pipeline:** Alla hittade jobb hamnar i din egen `pipeline.html` — en dark-mode dashboard med filter för kategori, plats, status och urgency. Varje jobb taggas (tech/komm, ort/remote, ny/utvärderad/utgången) och kan klickas igenom till originalannonsen. Den här filen är gitignored eftersom den innehåller din faktiska sökdata — se `pipeline.example.html` för hur formatet ser ut i praktiken.
 
-**Utvärdering:** Intressanta jobb utvärderas mot kandidatprofilen och får en rapport med scorecard, gap-analys, STAR-historier, personligt brev-utkast och ATS-keywords. Rapporterna genereras som HTML med mörkt tema och länkas direkt från pipeline-vyn.
+**Utvärdering:** Intressanta jobb utvärderas mot din kandidatprofil och får en rapport med scorecard, gap-analys, STAR-historier, personligt brev-utkast och ATS-keywords. Rapporterna genereras som HTML med mörkt tema och länkas direkt från pipeline-vyn. Även rapporter är gitignored (`reports/`) — de innehåller kontaktuppgifter och detaljer om din faktiska sökning.
 
 ## Struktur
 
 ```
 letajobb/
-├── pipeline.html                  # Startsida — jobbpipeline med filter
-├── 001-lansstyrelsen-vgr.html     # Utvärderingsrapport
-├── 002-experis-trafikverket.html
-├── 003-lansstyrelsen-webbredaktor.html
-├── 004-afry-teknikinformator.html
-├── CURRENT_STATE.md               # Nuläge och historik
-├── CLAUDE.md                      # AI-instruktioner för projektet
+├── pipeline.example.html          # Exempel på pipeline-formatet (committed)
+├── pipeline.html                  # Din egen jobbpipeline (gitignored, genereras lokalt)
+├── reports/                       # Utvärderingsrapporter (gitignored)
+├── CLAUDE.md                      # AI-instruktioner för projektet — börja här
+├── LICENSE                        # MIT
 ├── .gitignore
+├── af-mcp/                        # Platsbanken-scanner (MCP-server) + säkerhetslager för pipeline.html
+│   ├── server.py                  # MCP-server mot JobTech API
+│   ├── scan.py                    # Batch-scanner med titelfiltrering
+│   ├── pipeline_lib.py            # Backup, atomisk skrivning, verifiering, räknarsynk
+│   └── verify.py                  # Fristående strukturkontroll av pipeline.html
 └── career-ops/                    # Pipeline-motor (fork av santifer/career-ops)
     ├── config/
-    │   ├── profile.yml            # Kandidatprofil (gitignored — persondata)
-    │   └── profile.example.yml    # Exempelprofil
-    ├── portals.yml                # Sökfrågor och bevakade företag
-    ├── data/
-    │   ├── pipeline.md            # Alla jobb i markdown-format
-    │   └── applications.md        # Ansökningsstatus
-    ├── reports/                   # Utvärderingsrapporter (markdown)
+    │   ├── profile.yml            # Din kandidatprofil (gitignored — persondata)
+    │   └── profile.example.yml    # Exempelprofil, kopiera och fyll i
+    ├── portals.yml                # Sökfrågor och bevakade företag (gitignored)
+    ├── data/                      # Ansökningsstatus, pipeline-inbox (gitignored)
+    ├── reports/                   # Utvärderingsrapporter i markdown (gitignored)
+    ├── interview-prep/            # STAR-historier och interviewprep (gitignored)
     ├── modes/                     # career-ops lägen och profil
     └── ...
 ```
+
+## Kom igång
+
+1. Klona repot
+2. Kör `/career-ops` i Claude Code (eller motsvarande) — den guidar dig genom onboarding: CV, profil, portaler
+3. Läs `CLAUDE.md` — projektinstruktionerna beskriver hur pipeline.html, rapporter och säkerhetslagret hänger ihop
+4. Fyll i din egen `career-ops/config/profile.yml` utifrån `profile.example.yml`
+5. Kör `python af-mcp/scan.py --dry-run` för att testa Platsbanken-scannern utan att skriva filer
 
 ## Vad som skiljer den här forken
 
 Originalet (career-ops) är riktat mot en specifik internationell marknad. Den här varianten är anpassad för:
 
 - **Svenska jobbportaler** — Platsbanken, Indeed Sverige, Teamtailor-baserade karriärsidor, Varbi (offentlig sektor)
-- **Bred rollprofil** — söker parallellt inom IT-support, Python-utveckling, kommunikation, teknikinformation och hybridroller
+- **Bred rollprofil** — kan söka parallellt inom flera olika yrkesspår, t.ex. IT-support, utveckling, kommunikation och hybridroller
 - **HTML-pipeline** — egen dark-mode dashboard (`pipeline.html`) med filter, taggar och rapportlänkar som ersätter career-ops standardvy
 - **Utvärderingsrapporter** — scorecard, gap-analys, STAR-historier och personligt brev-utkast, genererade som statisk HTML
-- **Svensk + EMEA-remote** — skannar både lokalt (Göteborg) och internationella remote-roller hos bolag som GitLab, Zapier, n8n, Camunda m.fl.
+- **Säkerhetslager** (`af-mcp/pipeline_lib.py`) — backup, atomisk skrivning och strukturverifiering av pipeline.html, byggt efter en incident där ett improviserat fix-skript raderade ~99 jobb (se `INCIDENT_2026-07-09_pipeline_corruption.md` för postmortemet och varför reglerna i CLAUDE.md ser ut som de gör)
 
 ## Teknik
 
-Ingen fancy stack. HTML + vanilla JS för pipeline-vyn. career-ops körs med Node.js + Playwright för portalskanning. Rapporter genereras som statisk HTML. Hela grejjen orkestreras via Claude som AI-assistent för skanning, utvärdering och rapportskrivning.
+Ingen fancy stack. HTML + vanilla JS för pipeline-vyn. career-ops körs med Node.js + Playwright för portalskanning. Rapporter genereras som statisk HTML. Hela grejjen är byggd för att orkestreras via Claude Code (eller annan AI-kodassistent) som körs mot `CLAUDE.md`.
 
-## Status
+## Licens
 
-Aktivt projekt. Pipeline skannas regelbundet och utökas med nya portaler vid behov. Just nu 35 jobb i pipeline, varav 4 utvärderade.
-
-## Personligt
-
-Det här är mitt faktiska jobbsök — inte ett demo eller proof-of-concept. Jag är Senior Technical Advisor med journalistbakgrund och självlärd Python-utvecklare i Göteborg som söker brett: support, IT, utveckling, kommunikation, och hybrider däremellan.
-
-Portfolion finns på [kullendorff.github.io/thisisme](https://kullendorff.github.io/thisisme/).
+MIT, se `LICENSE`. career-ops (undermappen) har sin egen MIT-licens från originalförfattaren.
 
 ---
 
-*Känslig persondata (CV:n, personnummer, kontaktuppgifter, löneanspråk) är exkluderade via `.gitignore`.*
+*Persondata (CV:n, personnummer, kontaktuppgifter, löneanspråk, din faktiska pipeline och dina rapporter) exkluderas via `.gitignore`. Se `CLAUDE.md` för hur säkerhetsreglerna kring `pipeline.html` fungerar.*

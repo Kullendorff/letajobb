@@ -1,32 +1,36 @@
-# Hittajobb — Johans jobbsökningsprojekt
+# Hittajobb — jobbsökningsprojekt
 
 ## Syfte
-AI-assisterad jobbsökning med career-ops som pipeline-motor.
+AI-assisterad jobbsökning med career-ops som pipeline-motor. Det här repot startade som ett
+personligt jobbsök men är städat till en återanvändbar mall — se README.md för hur du gör den din.
 
 ## Struktur
-- `career-ops/` — Klonad från santifer/career-ops, anpassad för Johan
-- `Johan_Kullendorff_CV_Avinode.pdf` — CV (EN), Technical Support + API & Documentation
-- `Johan_Kullendorff_CV_Friday_Mac.pdf` — CV (SV), IT-Supporttekniker, Mac & Windows
-- `Johan_Kullendorff_CV_Sway.pdf` — CV (SV), Application Support, Incident Management
-- `johan_kontext_claude_code.md` — Johans fullständiga kontextfil
+- `career-ops/` — Klonad från santifer/career-ops, anpassad för svensk arbetsmarknad
+- `{Ditt_Namn}_CV_{variant}.pdf` — CV-varianter per roll/bolag (gitignored, dina egna filer)
+- `career-ops/johan_kontext_claude_code.md` → byt namn/skriv en egen `{namn}_kontext_claude_code.md` — din fullständiga kontextfil (gitignored)
 
 ## Kandidatprofil (snabbref)
-- **Johan Kullendorff**, Göteborg, 49 år
-- Senior Technical Advisor på Concentrix med specialisering inom Apples ekosystem, 2020–nu
-- Journalist/redigerare-bakgrund (6+ år)
-- Självlärd Python/Flask/API-utvecklare
-- Söker BRETT: support, IT, Python dev, automation, kommunikatör, kundsuccess SaaS, hybrid tech+komm
-- Göteborg primärt, remote/hybrid öppet
+Fyll i din egen profil här, t.ex.:
+- **Ditt namn**, ort, ålder (valfritt)
+- Nuvarande roll/bransch och hur länge
+- Bakgrund som är relevant för sökningen (tidigare karriärer, utbildning)
+- Kärnkompetenser
+- Vad du söker BRETT eller SMALT — roller, geografi, remote/hybrid-preferens
+
+Se `career-ops/config/profile.example.yml` för den maskinläsbara versionen av samma sak.
 
 ## Sekretessregler (KRITISKT)
-**Läs `CLAUDE.local.md` FÖRST innan CV, brev eller publika dokument skrivs.** Den filen innehåller bindande formuleringsregler kring Johans nuvarande uppdrag och är gitignorerad av en anledning: innehållet får aldrig hamna i detta publika repo, i commits eller i publika dokument.
+Har du bindande sekretessregler kring nuvarande/tidigare uppdragsgivare (NDA, interna förhållanden
+som aldrig får nämnas i ansökningar) — **lägg dem i en lokal `CLAUDE.local.md`** och se till att den
+står i `.gitignore`. Läs den filen FÖRST innan CV, brev eller publika dokument skrivs. Poängen: den
+typen av regler ska aldrig kunna hamna i detta publika repo, i commits eller i publika dokument.
 
 ## Career-ops
 Kör `/career-ops` i career-ops-mappen för alla kommandon.
 Alla personliga anpassningar: `career-ops/config/profile.yml` + `career-ops/modes/_profile.md`
 
 ## HTML-output (VIKTIGT)
-- `pipeline.html` — jobbpipeline med filter, statusmarkeringar och rapportlänkar. **Johans startsida i Chrome.** Ligger i hittajobb-roten.
+- `pipeline.html` — jobbpipeline med filter, statusmarkeringar och rapportlänkar. Bra som din startsida i Chrome. Ligger i hittajobb-roten, gitignored (persondata) — se `pipeline.example.html` för formatet.
 - `reports/{NNN}-{företag}.html` (t.ex. `reports/001-lansstyrelsen-vgr.html`) — utvärderingsrapporter per jobb, i undermappen `reports/`
 - Markdown-versioner sparas även i `career-ops/reports/` för career-ops-systemet
 - **Efter varje utvärdering:** spara HTML-rapporten i `reports/`, uppdatera pipeline.html med status "UTVÄRDERAD" + länk `reports/NNN-slug.html`
@@ -128,7 +132,7 @@ Alla jobb-kort i pipeline.html MÅSTE följa samma struktur. Inga undantag.
 5. **Räknare handredigeras ALDRIG.** De beräknas från korten via `sync_counters()` / `verify.py --sync`. Definitioner: ansökta = `class="job applied"`, utvärderade = `class="job done"`, ovärderade/nya = `class="job"`, ej aktuella = `class="job ej"`. Totalt = summan. Synkas på alla ställen samtidigt (stats-header, filterknappar, sektionsrubriker, footer).
 6. **Scan-sektioner (`<!-- NYA JOBB -->`) FÅR INTE FINNAS.** Sedan 2026-07-09 infogar scan.py nya jobb direkt i Ovärderade-sektionen. Om en `<!-- NYA JOBB` dyker upp i filen har något gått fel - stoppa och utred, radera inte.
 7. **Sektionsmarkörerna `<!-- ANSÖKTA -->`, `<!-- ATT SÖKA NU -->`, `<!-- UTVÄRDERADE -->`, `<!-- OVÄRDERADE -->`, `<!-- EJ AKTUELLA -->` är strukturella ankare** som pipeline_lib navigerar efter. Får aldrig tas bort eller dubbleras.
-8. **Obevakade körningar (schemalagda tasks) får ALDRIG improvisera fix-skript** mot pipeline.html. Vid fel: rapportera till Johan, rör ingenting. Det var ett improviserat fix-skript kl 05 som orsakade incidenten 2026-07-09.
+8. **Obevakade körningar (schemalagda tasks) får ALDRIG improvisera fix-skript** mot pipeline.html. Vid fel: rapportera till användaren, rör ingenting. Det var ett improviserat fix-skript kl 05 som orsakade incidenten 2026-07-09 (se INCIDENT-filen för detaljer).
 
 ## Verifiera deadlines och status (VIKTIGT)
 - Innan utvärdering eller "Att söka NU"-listning: **kolla att jobbet är öppet**
@@ -151,17 +155,18 @@ Vanliga EJ AKTUELL-orsaker att flagga tydligt i note-text:
 - **3-skift / visstid / villkor:** "3-skift rullande schema + visstid - dåligt fit"
 - **Tjänsten tillsatt:** "verifierad expired YYYY-MM-DD"
 
-## Johans skrivstil (OBLIGATORISKT före CV/brev)
-Innan du skriver CV eller personligt brev:
-1. Hämta Johans skrivstilsanalys från Google Drive: sök `title contains 'skrivstil'` via google_drive_search, läs dokumentet
+## Din skrivstil (OBLIGATORISKT före CV/brev)
+Om du har en egen skrivstilsanalys (t.ex. genererad från tidigare texter) — peka på den här och
+läs den innan CV eller personligt brev skrivs. Annars, sträva efter:
+1. (Valfritt) Hämta din skrivstilsanalys från Google Drive eller lokal fil, läs dokumentet
 2. Anpassa ton, ordval och meningsbyggnad efter analysen:
    - Kort och direkt, inte blommigt
    - Ärlighet om gap, inga bortförklaringar
    - Parentetisk humor och ironi där det passar
    - Varierad meningslängd, inte robotmässigt jämn
    - Inga corporatefloskler eller överdrifter
-   - Johans favorituttryck OK att använda sparsamt ("med all önskvärd tydlighet", "facit i hand", etc.)
-3. Efter skrivning: läs igenom och fråga "skulle Johan ha skrivit det här?" - om svaret är nej, skriv om
+   - Dina egna favorituttryck OK att använda sparsamt — fyll på listan här när du hittar dina egna
+3. Efter skrivning: läs igenom och fråga "skulle jag ha skrivit det här?" - om svaret är nej, skriv om
 
 ## AI-marker scan (OBLIGATORISKT före leverans)
 Efter att CV och brev skapats, kör regex-scan PLUS manuell läsning för att fånga AI-trigger-formuleringar:
@@ -213,15 +218,15 @@ Uppdaterar: `pipeline.html`, `career-ops/data/pipeline.md`, `career-ops/data/sca
 - scan.py tar backup, skriver atomiskt och verifierar. Vid fel: avbryter utan att skriva.
 
 ## CV per jobb (OBLIGATORISKT)
-- **Skapa ALLTID ett dedikerat CV för varje jobb Johan söker**, även om det är 99% återanvändning av ett befintligt CV
-- Spara som `Johan_Kullendorff_CV_{företag}.pdf` (eller .docx) via career-ops PDF-generering
+- **Skapa ALLTID ett dedikerat CV för varje jobb du söker**, även om det är 99% återanvändning av ett befintligt CV
+- Spara som `{Ditt_Namn}_CV_{företag}.pdf` (eller .docx) via career-ops PDF-generering
 - Justera minst: titel, profil-stycke, och 2-3 rader i kompetenser/erfarenhet så de speglar annonsens ord
 - Detta gäller även snabba ansökningar - inget mer "återanvänder Friday_Mac som den är"
 - Logga vilket CV som skickades i pipeline.html-noten (t.ex. "Ansökt 2026-04-22, CV: Akkodis-variant")
 
 ## Generera CV och brev (workflow)
 - Pipeline finns i `outputs/generate_apps.py` (eller `generate_round2.py` för senare rundor) - Python-skript som tar profilen + variant-specifik info och bygger .docx via python-docx
-- Skapas: `Johan_Kullendorff_CV_{key}.docx` och `Johan_Kullendorff_Brev_{key}.docx` i hittajobb-roten
+- Skapas: `{Ditt_Namn}_CV_{key}.docx` och `{Ditt_Namn}_Brev_{key}.docx` i hittajobb-roten
 - Konvertera till PDF via `libreoffice --headless --convert-to pdf {fil}.docx --outdir .`
 - **Båda format levereras** - .docx för redigering, .pdf för uppladdning
 - Dela ut via `computer://C:\AI\hittajobb\{filnamn}.pdf`-länkar
@@ -231,14 +236,14 @@ Uppdaterar: `pipeline.html`, `career-ops/data/pipeline.md`, `career-ops/data/sca
 - Öppna annonsen i Chrome MCP, identifiera ansökningssättet:
   - **Mail (info@xxx.se):** öppna Gmail-utkast med to+subject+body pre-fyllt via URL-params (`https://mail.google.com/mail/u/0/?fs=1&tf=cm&to=...&su=...&body=...`)
   - **Webbformulär:** scrolla, identifiera fält via `find`, fyll i namn/mejl/telefon, klistra in brev i cover letter-textbox där sådan finns
-  - **Eccera/Akkodis (Zerolime/recman):** Johan har redan konton, lösenord-baserad inloggning kräver att Johan själv loggar in (säkerhetsregel)
-- **File upload (CV/brev) blockeras av Chrome MCP säkerhetsregler** - Johan måste själv klicka 📎 paperclip eller 'upload'-knappen och välja PDF:erna
+  - **Portaler med eget konto (Zerolime/recman m.fl.):** lösenord-baserad inloggning kräver att du själv loggar in (säkerhetsregel)
+- **File upload (CV/brev) blockeras av Chrome MCP säkerhetsregler** - du måste själv klicka 📎 paperclip eller 'upload'-knappen och välja PDF:erna
 - Stanna ALLTID innan submit/send. Per `feedback_jobbsok_workflow.md`: aldrig tryck "skicka"
 - Cookie-banners: välj alltid "Avvisa alla" / mest privacy-bevarande automatiskt
 
 ## Principer
 - Ärlig, konkret ton, inget corporatespeak
 - Anpassa CV-variant efter roll (3 befintliga + career-ops PDF-generering + nya per-jobb-varianter)
-- Johan är i akut jobbsökarläge, bred sökning, inte bara drömroller
-- Aldrig em-dash (—) i text. En-dash (–) är ok men sparsamt (Johan använder den ibland själv). Vanligt bindestreck (-) duger oftast
+- Anpassa efter ditt läge — akut bred sökning kontra selektiv jakt på drömroller kräver olika strategi
+- Aldrig em-dash (—) i text. En-dash (–) är ok men sparsamt. Vanligt bindestreck (-) duger oftast
 - **Inga rapporter för ohjälpliga jobb** - om mandatory-krav saknas, markera EJ AKTUELL direkt och gå vidare

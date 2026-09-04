@@ -176,7 +176,7 @@ async def _search(q: str, municipality: str, remote: bool | None, published_afte
 # HTML-generering
 # ---------------------------------------------------------------------------
 def _html_entry(ad: dict, data_tags: str, cat_label: str) -> str:
-    # Em-dash får ALDRIG slinka in i output (Johans hårda regel). En-dash är ok.
+    # Em-dash får ALDRIG slinka in i output (hård regel). En-dash är ok.
     headline = ad.get("headline", "Utan rubrik").replace("—", "-")
     employer = ad.get("employer", {}).get("name", "Okänd").replace("—", "-")
     wp = ad.get("workplace_address", {}) or {}

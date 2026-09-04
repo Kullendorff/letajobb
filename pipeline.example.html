@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jobbpipeline - Exempel</title>
+<style>
+  :root {
+    --bg: #0f1117; --surface: #1a1d27; --surface-hover: #232736; --border: #2a2e3d;
+    --text: #e1e4ed; --text-dim: #8b90a0; --accent: #6c9cff; --accent-dim: #4a7ae0;
+    --green: #4ade80; --orange: #fbbf24; --red: #f87171; --purple: #c084fc;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; padding: 2rem; max-width: 1100px; margin: 0 auto; }
+  header { margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+  h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.02em; }
+  .subtitle { color: var(--text-dim); font-size: 0.95rem; margin-top: 0.25rem; }
+  .banner { background: linear-gradient(135deg, #1a1d27, #1e2030); border: 1px solid var(--accent); border-radius: 10px; padding: 1rem 1.2rem; margin-top: 1rem; font-size: 0.85rem; color: var(--text-dim); }
+  .banner strong { color: var(--accent); }
+  .stats { display: flex; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap; }
+  .stat { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; color: var(--text-dim); }
+  .stat .num { font-weight: 700; font-size: 1.1rem; color: var(--text); }
+  .filters { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .filter-btn { padding: 0.4rem 0.9rem; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text-dim); cursor: pointer; font-size: 0.82rem; transition: all 0.15s; }
+  .filter-btn:hover { border-color: var(--accent); color: var(--text); }
+  .filter-btn.active { background: var(--accent-dim); color: white; border-color: var(--accent); }
+  .section-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); margin: 1.5rem 0 0.75rem; }
+  .job-list { list-style: none; }
+  .job { display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 0.5rem; background: var(--surface); transition: all 0.15s; text-decoration: none; color: inherit; }
+  .job:hover { background: var(--surface-hover); border-color: var(--accent); transform: translateX(2px); }
+  .job-info { flex: 1; min-width: 0; }
+  .job-title { font-weight: 600; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .job-company { font-size: 0.82rem; color: var(--text-dim); }
+  .report-link { padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.72rem; font-weight: 600; background: #1a3a2a; color: #4ade80; border: 1px solid #2a5a3a; text-decoration: none; white-space: nowrap; flex-shrink: 0; }
+  .report-link:hover { background: #2a5a3a; }
+  .tags { display: flex; gap: 0.35rem; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+  .tag { padding: 0.2rem 0.55rem; border-radius: 4px; font-size: 0.7rem; font-weight: 600; white-space: nowrap; }
+  .tag-tech { background: #1e3a5f; color: #6cb4ff; }
+  .tag-komm { background: #3b2460; color: #c084fc; }
+  .tag-gbg { background: #1a3a2a; color: #4ade80; }
+  .tag-remote { background: #3a3020; color: #fbbf24; }
+  .tag-done { background: #1a3a2a; color: #4ade80; }
+  .tag-applied { background: #0d4a2a; color: #22d66f; border: 1px solid #22d66f; font-weight: 800; }
+  .job.applied { border-left: 3px solid #22d66f; background: #111a20; }
+  .tag-ej { background: #2a2020; color: #888; text-decoration: line-through; }
+  .job.ej { opacity: 0.4; border-left: 3px solid #555; }
+  .job.done { border-left: 3px solid var(--green); }
+  .arrow { color: var(--text-dim); font-size: 1.1rem; flex-shrink: 0; }
+  .job:hover .arrow { color: var(--accent); }
+  footer { margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--border); color: var(--text-dim); font-size: 0.8rem; }
+  .sok-now { margin: 1.5rem 0 2rem; background: linear-gradient(135deg, #1a1d27, #1e2030); border: 1px solid var(--accent); border-radius: 10px; padding: 1.2rem; }
+  .sok-now h2 { font-size: 1rem; font-weight: 700; color: var(--accent); margin-bottom: 0.4rem; letter-spacing: 0.02em; }
+  .sok-now .sub { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.9rem; }
+  .sok-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .sok-table th { text-align: left; padding: 0.5rem 0.6rem; background: #232736; color: var(--text-dim); font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; user-select: none; border-bottom: 1px solid var(--border); }
+  .sok-table th:hover { color: var(--accent); }
+  .sok-table th.sort-active { color: var(--accent); }
+  .sok-table th.sort-active::after { content: " ↓"; font-size: 0.7rem; }
+  .sok-table th.sort-active.asc::after { content: " ↑"; }
+  .sok-table td { padding: 0.6rem; border-bottom: 1px solid #232736; vertical-align: middle; }
+  .sok-table tr:hover td { background: #1f2330; }
+  .sok-table .company-cell { display: flex; flex-direction: column; gap: 0.15rem; }
+  .sok-table .role { font-weight: 600; color: var(--text); font-size: 0.88rem; }
+  .sok-table .company { color: var(--text-dim); font-size: 0.78rem; }
+  .sok-table .score-cell { font-weight: 700; font-size: 0.95rem; color: var(--accent); white-space: nowrap; }
+  .sok-table .score-bar { display: inline-block; width: 40px; height: 4px; background: #232736; border-radius: 2px; margin-left: 0.4rem; vertical-align: middle; overflow: hidden; }
+  .sok-table .score-fill { display: block; height: 100%; background: var(--accent); }
+  .sok-table .deadline-cell { color: var(--text); font-size: 0.85rem; white-space: nowrap; }
+  .sok-table .deadline-urgent { color: var(--red); font-weight: 700; }
+  .sok-table .deadline-warn { color: var(--orange); font-weight: 600; }
+  .sok-table .deadline-ok { color: var(--green); }
+  .sok-table .deadline-days { color: var(--text-dim); font-size: 0.72rem; margin-left: 0.3rem; }
+  .sok-table a.report-btn { padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.72rem; font-weight: 600; background: #1a3a2a; color: #4ade80; border: 1px solid #2a5a3a; text-decoration: none; white-space: nowrap; margin-right: 0.3rem; }
+  .sok-table a.report-btn:hover { background: #2a5a3a; }
+  .sok-table a.apply-btn { padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.72rem; font-weight: 700; background: #1e3a5f; color: #6cb4ff; border: 1px solid #2a4a7f; text-decoration: none; white-space: nowrap; }
+  .sok-table a.apply-btn:hover { background: #2a4a7f; color: white; }
+  .sok-table .actions-cell { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Jobbpipeline</h1>
+  <div class="subtitle">Exempeldata - visar formatet, inte en riktig jobbsökning</div>
+  <div class="banner">
+    Det här är <strong>pipeline.example.html</strong> - en avpersonaliserad demo av hur pipeline.html
+    ser ut i drift. Din egen <code>pipeline.html</code> genereras lokalt av scan.py/career-ops och är
+    gitignored, så din riktiga jobbdata hamnar aldrig på GitHub.
+  </div>
+  <div class="stats">
+    <div class="stat"><span class="num">6</span> jobb totalt</div>
+    <div class="stat"><span class="num" style="color:#22d66f">1</span> ansökta</div>
+    <div class="stat"><span class="num" style="color:var(--green)">2</span> utvärderade</div>
+    <div class="stat"><span class="num" style="color:var(--accent)">2</span> nya</div>
+    <div class="stat"><span class="num" style="color:#888">1</span> ej aktuella</div>
+  </div>
+</header>
+
+<div class="filters">
+  <button class="filter-btn active" onclick="filterJobs('all')">Alla (6)</button>
+  <button class="filter-btn" onclick="filterJobs('applied')">Ansökta (1)</button>
+  <button class="filter-btn" onclick="filterJobs('done')">Utvärderade (2)</button>
+  <button class="filter-btn" onclick="filterJobs('new')">Nya (2)</button>
+  <button class="filter-btn" onclick="filterJobs('gbg')">Göteborg</button>
+  <button class="filter-btn" onclick="filterJobs('remote')">Remote</button>
+  <button class="filter-btn" onclick="filterJobs('komm')">Komm</button>
+  <button class="filter-btn" onclick="filterJobs('tech')">Tech</button>
+  <button class="filter-btn" onclick="filterJobs('ej')">Ej aktuella (1)</button>
+</div>
+
+<!-- ANSÖKTA -->
+<div class="section-label" style="color:#22d66f">✅ Ansökta (1)</div>
+<ul class="job-list">
+  <a href="https://example.com/jobb/1001" target="_blank" class="job applied" data-tags="tech gbg applied">
+    <div class="job-info">
+      <div class="job-title">IT-supporttekniker</div>
+      <div class="job-company">Exempel AB, Ansökt 2026-05-10, CV: Exempel-variant (skräddarsydd)</div>
+    </div>
+    <div class="tags">
+      <span class="tag tag-applied">ANSÖKT ✓</span>
+      <span class="tag tag-tech">Tech</span>
+      <span class="tag tag-gbg">Göteborg</span>
+    </div>
+    <a href="reports/001-exempel-ab.html" class="report-link" onclick="event.stopPropagation()">📋 Rapport</a>
+    <span class="arrow">→</span>
+  </a>
+</ul>
+
+<!-- ATT SÖKA NU -->
+<div class="sok-now">
+  <h2>📋 Att söka NU</h2>
+  <div class="sub">Utvärderade jobb, sorterbara. Klicka kolumnrubrik för att sortera.</div>
+  <table class="sok-table" id="sok-now-table">
+    <thead>
+      <tr>
+        <th data-sort="score" data-type="num" class="sort-active">Score</th>
+        <th data-sort="role" data-type="str">Roll / Företag</th>
+        <th data-sort="deadline" data-type="date">Deadline</th>
+        <th data-sort="loc" data-type="str">Lokation</th>
+        <th>Åtgärd</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr data-score="4.3" data-deadline="2026-06-15">
+        <td class="score-cell">4.3<span class="score-bar"><span class="score-fill" style="width:86%"></span></span></td>
+        <td><div class="company-cell"><span class="role">Kundtjänstspecialist SaaS</span><span class="company">Demo Systems AB</span></div></td>
+        <td class="deadline-cell deadline-warn">2026-06-15<span class="deadline-days">(11 dagar)</span></td>
+        <td>Remote</td>
+        <td class="actions-cell">
+          <a href="https://example.com/jobb/1002" target="_blank" class="apply-btn">🔗 Ansök</a>
+          <a href="reports/002-demo-systems.html" class="report-btn">📋 002</a>
+        </td>
+      </tr>
+      <tr data-score="3.6" data-deadline="2026-07-01">
+        <td class="score-cell">3.6<span class="score-bar"><span class="score-fill" style="width:72%"></span></span></td>
+        <td><div class="company-cell"><span class="role">Systemadministratör</span><span class="company">Testbolaget i Väst AB</span></div></td>
+        <td class="deadline-cell deadline-ok">2026-07-01<span class="deadline-days">(27 dagar)</span></td>
+        <td>Göteborg</td>
+        <td class="actions-cell">
+          <a href="https://example.com/jobb/1003" target="_blank" class="apply-btn">🔗 Ansök</a>
+          <a href="reports/003-testbolaget.html" class="report-btn">📋 003</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- UTVÄRDERADE -->
+<div class="section-label" style="color:var(--green)">📋 Utvärderade (2)</div>
+<ul class="job-list">
+  <a href="https://example.com/jobb/1002" target="_blank" class="job done" data-tags="tech remote utvärderad">
+    <div class="job-info">
+      <div class="job-title">Kundtjänstspecialist SaaS</div>
+      <div class="job-company">Demo Systems AB - Score: 4.3/5</div>
+    </div>
+    <div class="tags">
+      <span class="tag tag-done">UTVÄRDERAD</span>
+      <span class="tag tag-tech">Tech</span>
+      <span class="tag tag-remote">Remote</span>
+    </div>
+    <a href="reports/002-demo-systems.html" class="report-link" onclick="event.stopPropagation()">📋 Rapport</a>
+    <span class="arrow">→</span>
+  </a>
+  <a href="https://example.com/jobb/1003" target="_blank" class="job done" data-tags="tech gbg utvärderad">
+    <div class="job-info">
+      <div class="job-title">Systemadministratör</div>
+      <div class="job-company">Testbolaget i Väst AB - Score: 3.6/5</div>
+    </div>
+    <div class="tags">
+      <span class="tag tag-done">UTVÄRDERAD</span>
+      <span class="tag tag-tech">Tech</span>
+      <span class="tag tag-gbg">Göteborg</span>
+    </div>
+    <a href="reports/003-testbolaget.html" class="report-link" onclick="event.stopPropagation()">📋 Rapport</a>
+    <span class="arrow">→</span>
+  </a>
+</ul>
+
+<!-- OVÄRDERADE -->
+<div class="section-label">🔍 Ovärderade (2)</div>
+<ul class="job-list">
+  <a href="https://example.com/jobb/1004" target="_blank" class="job" data-tags="komm gbg">
+    <div class="job-info">
+      <div class="job-title">Kommunikatör (vikariat)</div>
+      <div class="job-company">Regionexempel - Göteborg</div>
+    </div>
+    <div class="tags">
+      <span class="tag tag-komm">Komm</span>
+      <span class="tag tag-gbg">Göteborg</span>
+    </div>
+    <span class="arrow">→</span>
+  </a>
+  <a href="https://example.com/jobb/1005" target="_blank" class="job" data-tags="tech remote">
+    <div class="job-info">
+      <div class="job-title">Solutions Engineer</div>
+      <div class="job-company">Fjärrbolaget Inc - Remote (EMEA)</div>
+    </div>
+    <div class="tags">
+      <span class="tag tag-tech">Tech</span>
+      <span class="tag tag-remote">Remote</span>
+    </div>
+    <span class="arrow">→</span>
+  </a>
+</ul>
+
+<!-- EJ AKTUELLA -->
+<div class="section-label">❌ Ej aktuella (1)</div>
+<ul class="job-list">
+  <a href="https://example.com/jobb/1006" target="_blank" class="job ej" data-tags="tech ej">
+    <div class="job-info">
+      <div class="job-title">Senior Integration Architect</div>
+      <div class="job-company">Storbolaget AB - EJ AKTUELL: kräver 10+ års erfarenhet, fel nivå</div>
+    </div>
+    <div class="tags">
+      <span class="tag tag-ej">EJ AKTUELL</span>
+      <span class="tag tag-tech">Tech</span>
+    </div>
+    <span class="arrow">→</span>
+  </a>
+</ul>
+
+<script>
+function filterJobs(tag) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.querySelectorAll('.job').forEach(j => {
+    j.style.display = (tag === 'all' || (j.dataset.tags||'').includes(tag)) ? '' : 'none';
+  });
+  document.querySelectorAll('.section-label').forEach(l => {
+    const s = l.nextElementSibling;
+    if (s) l.style.display = s.querySelectorAll('.job:not([style*="display: none"])').length ? '' : 'none';
+  });
+}
+
+// Sorterbar tabell för "Att söka NU"
+(function() {
+  const table = document.getElementById('sok-now-table');
+  if (!table) return;
+  const tbody = table.querySelector('tbody');
+  const headers = table.querySelectorAll('th[data-sort]');
+  let currentSort = { col: 'score', dir: 'desc' };
+
+  function sortRows(col, type, dir) {
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+    rows.sort((a, b) => {
+      let av, bv;
+      if (col === 'score') { av = parseFloat(a.dataset.score); bv = parseFloat(b.dataset.score); }
+      else if (col === 'deadline') { av = a.dataset.deadline; bv = b.dataset.deadline; }
+      else if (col === 'role') { av = a.querySelector('.role').textContent; bv = b.querySelector('.role').textContent; }
+      else if (col === 'loc') { av = a.querySelectorAll('td')[3].textContent; bv = b.querySelectorAll('td')[3].textContent; }
+      if (type === 'num') return dir === 'asc' ? av - bv : bv - av;
+      if (type === 'date') return dir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av);
+      return dir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av);
+    });
+    rows.forEach(r => tbody.appendChild(r));
+  }
+
+  sortRows('score', 'num', 'desc');
+
+  headers.forEach(th => {
+    th.addEventListener('click', () => {
+      const col = th.dataset.sort;
+      const type = th.dataset.type;
+      let dir;
+      if (currentSort.col === col) {
+        dir = currentSort.dir === 'asc' ? 'desc' : 'asc';
+      } else {
+        dir = (col === 'deadline' || col === 'role' || col === 'loc') ? 'asc' : 'desc';
+      }
+      currentSort = { col, dir };
+      headers.forEach(h => h.classList.remove('sort-active', 'asc'));
+      th.classList.add('sort-active');
+      if (dir === 'asc') th.classList.add('asc');
+      sortRows(col, type, dir);
+    });
+  });
+})();
+</script>
+<footer>career-ops pipeline - Exempeldata. 1 ansökningar, 2 utvärderade, 2 ovärderade, 1 ej aktuella.</footer>
+
+</body>
+</html>

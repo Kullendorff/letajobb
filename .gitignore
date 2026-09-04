@@ -20,21 +20,37 @@ career-ops/output/
 # Utvärderingsrapporter med kontaktuppgifter
 career-ops/reports/
 
+# STAR-historier och interview-prep (persondata om din karriär)
+career-ops/interview-prep/
+
+# career-ops egen genererade pipeline-vy (kan innehålla persondata)
+career-ops/data/pipeline.html
+
 # Sekretessregler (NDA m.m.) - FÅR ALDRIG COMMITTAS
 CLAUDE.local.md
 
 # Personliga brev/CV i alla format (fångar även .txt)
 Johan_Kullendorff_*
 
-# Pipeline-backuper och forensik
+# Din riktiga jobbpipeline (persondata) - se pipeline.example.html för formatet
+pipeline.html
 pipeline.html.bak*
 pipeline.html.corrupted
+
+# Personlig statusfil/arbetslogg
+CURRENT_STATE.md
+
+# Engångs-fixskript med hårdkodad persondata - använd af-mcp/pipeline_lib.py istället
+update_pipeline.py
 
 # HTML-rapporter (persondata - hela mappen ignoreras)
 reports/
 
 # Lokala Claude Code-inställningar
 .claude/
+
+# Codex/Agents-variant av CLAUDE.md (kan innehålla samma persondata)
+AGENTS.md
 
 # Python cache
 __pycache__/
