@@ -1,5 +1,17 @@
 # Hittajobb — jobbsökningsprojekt
 
+## FÖRSTA KÖRNINGEN (läs detta först)
+
+Kolla tyst om dessa filer finns: `career-ops/config/profile.yml`,
+`career-ops/cv.md`, `career-ops/portals.yml`, `career-ops/modes/_profile.md`,
+`pipeline.html`, `career-ops/data/pipeline.md`. **Saknas någon av dem** —
+det här är en ny installation. Gör inget annat förrän du har läst
+`ONBOARDING.md` och intervjuat användaren enligt den. Rör aldrig
+`pipeline.html` med Edit/Write innan `af-mcp/init.py` har körts (se
+"Pipeline.html redigeringsregler" nedan).
+
+Finns alla filer redan är onboardingen klar — fortsätt som vanligt.
+
 ## Syfte
 AI-assisterad jobbsökning med career-ops som pipeline-motor. Det här repot startade som ett
 personligt jobbsök men är städat till en återanvändbar mall — se README.md för hur du gör den din.
@@ -47,10 +59,13 @@ Alla personliga anpassningar: `career-ops/config/profile.yml` + `career-ops/mode
 - Varje rad har **två knappar**: 🔗 Ansök (direktlänk till annonsen) + 📋 [nr] (länk till rapporten)
 - Deadline-celler färgkodade: röd (`deadline-urgent`) ≤ 7 dagar, orange (`deadline-warn`) ≤ 21 dagar, grön (`deadline-ok`) > 21 dagar
 - Stats i headern: jobb totalt / ansökta / utvärderade / nya / ej aktuella
-- Filter-knappar: Alla / Ansökta / Utvärderade / Nya / Göteborg / Remote / Komm / Tech / Ej aktuella
+- Filter-knappar: Alla / Ansökta / Utvärderade / Nya / {Din ort} / Remote / Komm / Tech / Ej aktuella
 
 ## Pipeline.html kortformat (OBLIGATORISKT)
 Alla jobb-kort i pipeline.html MÅSTE följa samma struktur. Inga undantag.
+CSS-klassen `tag-gbg` är ett fast namn i systemet (används av `pipeline_lib.py`,
+`pipeline.example.html` osv.) — den betyder "ortstagg", inte specifikt
+Göteborg. Byt bara ut den synliga texten mot din egen ort, inte klassnamnet.
 
 **Ansökta kort** (`class="job applied"`):
 ```html
@@ -62,7 +77,7 @@ Alla jobb-kort i pipeline.html MÅSTE följa samma struktur. Inga undantag.
   <div class="tags">
     <span class="tag tag-applied">ANSÖKT ✓</span>
     <span class="tag tag-tech">...</span>
-    <span class="tag tag-gbg">Göteborg</span>
+    <span class="tag tag-gbg">{Din ort}</span>
   </div>
   <a href="reports/{nr}-{slug}.html" class="report-link" onclick="event.stopPropagation()">📋 Rapport</a>  <!-- om rapport finns -->
   <span class="arrow">→</span>
@@ -79,7 +94,7 @@ Alla jobb-kort i pipeline.html MÅSTE följa samma struktur. Inga undantag.
   <div class="tags">
     <span class="tag tag-done">UTVÄRDERAD</span>
     <span class="tag tag-tech">...</span>
-    <span class="tag tag-gbg">Göteborg</span>
+    <span class="tag tag-gbg">{Din ort}</span>
   </div>
   <a href="reports/{nr}-{slug}.html" class="report-link" onclick="event.stopPropagation()">📋 Rapport</a>
   <span class="arrow">→</span>
@@ -95,7 +110,7 @@ Alla jobb-kort i pipeline.html MÅSTE följa samma struktur. Inga undantag.
   </div>
   <div class="tags">
     <span class="tag tag-tech">...</span>
-    <span class="tag tag-gbg">Göteborg</span>
+    <span class="tag tag-gbg">{Din ort}</span>
   </div>
   <span class="arrow">→</span>
 </a>
@@ -150,7 +165,7 @@ Jobb som är "EJ AKTUELL" SKA stanna i pipeline.html (med `class="job ej"` + `ta
 - Plus extra dubbel-spårning: lägg till rad i `career-ops/data/scan-history.tsv` med status `skipped-not-actual`
 
 Vanliga EJ AKTUELL-orsaker att flagga tydligt i note-text:
-- **Geografi-mismatch:** "tjänsten är i Norrköping/Stockholm/Linköping (inte Göteborg)"
+- **Geografi-mismatch:** "tjänsten är i {annan ort} (inte {din ort})"
 - **Mandatory-krav saknas:** "kräver 5+ års X" / "PhD i Y" / "PLC-programmering" / "10 års strategisk kommunikation"
 - **3-skift / visstid / villkor:** "3-skift rullande schema + visstid - dåligt fit"
 - **Tjänsten tillsatt:** "verifierad expired YYYY-MM-DD"
@@ -225,10 +240,10 @@ Uppdaterar: `pipeline.html`, `career-ops/data/pipeline.md`, `career-ops/data/sca
 - Logga vilket CV som skickades i pipeline.html-noten (t.ex. "Ansökt 2026-04-22, CV: Akkodis-variant")
 
 ## Generera CV och brev (workflow)
-- Pipeline finns i `outputs/generate_apps.py` (eller `generate_round2.py` för senare rundor) - Python-skript som tar profilen + variant-specifik info och bygger .docx via python-docx
-- Skapas: `{Ditt_Namn}_CV_{key}.docx` och `{Ditt_Namn}_Brev_{key}.docx` i hittajobb-roten
-- Konvertera till PDF via `libreoffice --headless --convert-to pdf {fil}.docx --outdir .`
-- **Båda format levereras** - .docx för redigering, .pdf för uppladdning
+- Standardvägen: `/career-ops pdf` (kör `career-ops/generate-pdf.mjs`, Playwright HTML→PDF via `career-ops/templates/cv-template.html`), källa till sanning är `career-ops/cv.md` + `career-ops/config/profile.yml`
+- Skapas i `career-ops/output/`: `{namn}-cv-{key}.html` + PDF
+- Om du hellre bygger .docx-varianter för hand (äldre arbetssätt): skriv ett eget skript i `outputs/` som tar profilen + variant-specifik info och bygger .docx via python-docx, konvertera med `libreoffice --headless --convert-to pdf {fil}.docx --outdir .`. Namnge `{Ditt_Namn}_CV_{key}.docx`/`_Brev_{key}.docx` i hittajobb-roten — matchar gitignore-mönstren `*_CV_*`/`*_Brev_*`
+- **Båda format levereras** när du bygger .docx-varianten - .docx för redigering, .pdf för uppladdning
 - Dela ut via `computer://C:\AI\hittajobb\{filnamn}.pdf`-länkar
 - Edit-tool och bash-tool ser olika filsystem-paths (Windows fil vs Linux mount). Om syntaxfel uppstår vid bash-körning: skriv om hela filen via `cat > /sessions/.../mnt/outputs/script.py << 'PYEOF' ... PYEOF`
 

@@ -15,17 +15,38 @@ import re
 import sys
 from pathlib import Path
 
+# Windows cp1252-konsolen kraschar annars på ✅/⚠️-tecken.
+sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 sys.path.insert(0, str(Path(__file__).parent))
 from pipeline_lib import backup_pipeline, count_jobs, safe_write, sync_counters, verify_pipeline
 
-PIPELINE = Path(__file__).parent.parent / "pipeline.html"
+ROOT = Path(__file__).parent.parent
+PIPELINE = ROOT / "pipeline.html"
+PORTALS_YML = ROOT / "career-ops" / "portals.yml"
+
+
+def _default_city() -> str:
+    """Ort att sätta på 'gbg'-taggade kort som saknar text (läses från portals.yml)."""
+    if PORTALS_YML.exists():
+        try:
+            import yaml
+            config = yaml.safe_load(PORTALS_YML.read_text(encoding="utf-8")) or {}
+            city = (config.get("platsbanken") or {}).get("default_city")
+            if city:
+                return city
+        except Exception:
+            pass
+    return "Göteborg"
+
 
 CARD_START = re.compile(r'<a href="([^"]+)" target="_blank" class="(job[^"]*)"\s+data-tags="([^"]*)"')
 BOUNDARIES = ["</ul>", "<!-- ", '<div class="section-label"', "<footer", "<script", "</body>"]
 
 TAG_LABELS = {
     "tech": ("tag-tech", "Tech"), "komm": ("tag-komm", "Komm"),
-    "gbg": ("tag-gbg", "Göteborg"), "remote": ("tag-remote", "Remote"),
+    "gbg": ("tag-gbg", _default_city()), "remote": ("tag-remote", "Remote"),
     "new": ("tag-new", "NY"),
 }
 

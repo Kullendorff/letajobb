@@ -8,13 +8,21 @@
 import sys
 from pathlib import Path
 
+# Windows cp1252-konsolen kraschar annars på ✅/❌-tecken.
+sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 sys.path.insert(0, str(Path(__file__).parent))
 from pipeline_lib import backup_pipeline, count_jobs, safe_write, sync_counters, verify_pipeline
 
-PIPELINE = Path(__file__).parent.parent / "pipeline.html"
+ROOT = Path(__file__).parent.parent
+PIPELINE = ROOT / "pipeline.html"
 
 
 def main() -> None:
+    if not PIPELINE.exists():
+        print(f"❌ {PIPELINE.relative_to(ROOT)} saknas. Kör: python af-mcp/init.py", file=sys.stderr)
+        sys.exit(1)
     html = PIPELINE.read_text(encoding="utf-8")
     c = count_jobs(html)
     print(f"Jobb: {c['total']} totalt — {c['applied']} ansökta, {c['done']} utvärderade, "
@@ -24,6 +32,14 @@ def main() -> None:
     synced = sync_counters(html)
     if synced != html:
         errors.append("räknarna är ur synk med korten (kör --sync för att rätta)")
+
+    # 0 jobbkort är ett hårt fel i verify_pipeline() (skyddar safe_write mot att
+    # av misstag tömma en befintlig pipeline) — men i verify.py, som bara
+    # rapporterar till en människa, är en helt ny, tom pipeline.html (precis
+    # byggd av af-mcp/init.py) inte ett fel. Nedgradera just det specialfallet.
+    if errors == ["0 jobbkort hittades"]:
+        print("ℹ️  pipeline.html är tom — inga jobb tillagda än. Kör af-mcp/scan.py för att fylla den.")
+        return
 
     if not errors:
         print("✅ pipeline.html OK")

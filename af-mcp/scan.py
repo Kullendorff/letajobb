@@ -25,7 +25,6 @@ import yaml
 # Config
 # ---------------------------------------------------------------------------
 JOBSEARCH_BASE = "https://jobsearch.api.jobtechdev.se"
-GÖTEBORG_MUNICIPALITY = "1480"
 TODAY = date.today().isoformat()
 
 SCRIPT_DIR = Path(__file__).parent
@@ -36,56 +35,59 @@ PIPELINE_MD = CAREER_OPS / "data" / "pipeline.md"
 PIPELINE_HTML = ROOT / "pipeline.html"
 PORTALS_YML = CAREER_OPS / "portals.yml"
 
-# Sökningar att köra: (q, municipality, remote)
-# municipality="" = Sverige-brett
-SEARCHES: list[tuple[str, str, bool | None]] = [
-    ("IT-support", GÖTEBORG_MUNICIPALITY, None),
-    ("supporttekniker", GÖTEBORG_MUNICIPALITY, None),
-    ("helpdesk", GÖTEBORG_MUNICIPALITY, None),
-    ("servicedesk", GÖTEBORG_MUNICIPALITY, None),
-    ("IT-tekniker", GÖTEBORG_MUNICIPALITY, None),
-    ("2nd line", GÖTEBORG_MUNICIPALITY, None),
-    ("applikationssupport", GÖTEBORG_MUNICIPALITY, None),
-    ("Python developer", GÖTEBORG_MUNICIPALITY, None),
-    ("kommunikatör", GÖTEBORG_MUNICIPALITY, None),
-    ("webbredaktör", GÖTEBORG_MUNICIPALITY, None),
-    ("technical support", GÖTEBORG_MUNICIPALITY, None),
-    ("technical support specialist", "", True),
-    ("support engineer", "", True),
-    # -- Breddat 2026-06-04: customer success / integration / API --
-    ("customer success", GÖTEBORG_MUNICIPALITY, None),
-    ("customer success", "", True),
-    ("customer support specialist", "", True),
-    ("onboarding", "", True),
-    ("integration", GÖTEBORG_MUNICIPALITY, None),
-    ("API", GÖTEBORG_MUNICIPALITY, None),
-    # -- Breddat steg 2: outaktiverade målroller --
-    ("IT-koordinator", GÖTEBORG_MUNICIPALITY, None),
-    ("systemadministratör", GÖTEBORG_MUNICIPALITY, None),
-    ("technical writer", GÖTEBORG_MUNICIPALITY, None),
-    ("teknisk skribent", GÖTEBORG_MUNICIPALITY, None),
-    ("application specialist", GÖTEBORG_MUNICIPALITY, None),
-    ("solutions engineer", "", True),
-    ("technical account manager", "", True),
-]
+INIT_HINT = "Kör: python af-mcp/init.py"
+
+# Sökningarna (vilka termer, vilken ort, vilken kategori) läses numera från
+# portals.yml -> platsbanken.searches, inte hårdkodade här. Se
+# career-ops/templates/portals.svenska.example.yml för formatet.
 
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
-def _tags_for_query(q: str, remote: bool | None) -> tuple[str, str]:
-    """Returnerar (data-tags sträng, kategori-label) baserat på sökning."""
-    q_low = q.lower()
-    if any(w in q_low for w in ("kommunikatör", "webbredaktör", "kommunik", "redaktör")):
-        tags, cat = "komm gbg new", "Kommunikation"
-    elif "python" in q_low:
-        tags, cat = "tech gbg new", "Python"
-    else:
-        tags, cat = "tech gbg new", "IT Support"
+def _load_portals_config() -> dict:
+    """Laddar portals.yml. Hårt fel om den saknas — ingen tyst nollfiltrering."""
+    if not PORTALS_YML.exists():
+        print(
+            f"❌ {PORTALS_YML.relative_to(ROOT)} saknas — kan inte köra scan.py utan den "
+            "(sökfrågor och titelfilter bor där).\n"
+            f"   {INIT_HINT}",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    with open(PORTALS_YML, encoding="utf-8") as f:
+        return yaml.safe_load(f) or {}
 
-    if remote:
+
+def _load_platsbanken_config(config: dict) -> tuple[str, str, list[dict]]:
+    """Läser platsbanken-blocket: (default_municipality, default_city, searches)."""
+    pb = config.get("platsbanken")
+    if not pb or not pb.get("searches"):
+        print(
+            f"❌ {PORTALS_YML.relative_to(ROOT)} saknar ett platsbanken:-block med searches.\n"
+            "   Se career-ops/templates/portals.svenska.example.yml för formatet.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    return pb.get("municipality", ""), pb.get("default_city", "Sverige"), pb["searches"]
+
+
+def _tags_for_search(search: dict, default_city: str) -> tuple[str, str]:
+    """Returnerar (data-tags sträng, kategori-label) utifrån en searches-post i portals.yml.
+
+    'category' styr CSS-klassen (bara tech/komm finns som taggfärger i pipeline.html),
+    valfri 'label' styr den synliga texten (t.ex. "Python" istället för generiska "Tech").
+    """
+    category = (search.get("category") or "tech").strip().lower()
+    tag_class = "komm" if category == "komm" else "tech"
+    cat_label = search.get("label") or {"tech": "Tech", "komm": "Kommunikation"}.get(
+        category, category.capitalize()
+    )
+    tags = f"{tag_class} gbg new"
+
+    if search.get("remote"):
         tags = tags.replace("gbg", "remote")
-    return tags, cat
+    return tags, cat_label
 
 
 async def _fetch(path: str, params: dict) -> dict:
@@ -99,12 +101,8 @@ async def _fetch(path: str, params: dict) -> dict:
         return r.json()
 
 
-def _load_title_filters() -> tuple[list[re.Pattern], list[re.Pattern]]:
-    """Laddar positiva och negativa titelfilter från portals.yml som regex-mönster."""
-    if not PORTALS_YML.exists():
-        return [], []
-    with open(PORTALS_YML, encoding="utf-8") as f:
-        config = yaml.safe_load(f)
+def _load_title_filters(config: dict) -> tuple[list[re.Pattern], list[re.Pattern]]:
+    """Kompilerar positiva och negativa titelfilter ur portals.yml-configen till regex."""
     tf = config.get("title_filter", {})
 
     def _compile(terms: list[str]) -> list[re.Pattern]:
@@ -175,7 +173,7 @@ async def _search(q: str, municipality: str, remote: bool | None, published_afte
 # ---------------------------------------------------------------------------
 # HTML-generering
 # ---------------------------------------------------------------------------
-def _html_entry(ad: dict, data_tags: str, cat_label: str) -> str:
+def _html_entry(ad: dict, data_tags: str, cat_label: str, default_city: str) -> str:
     # Em-dash får ALDRIG slinka in i output (hård regel). En-dash är ok.
     headline = ad.get("headline", "Utan rubrik").replace("—", "-")
     employer = ad.get("employer", {}).get("name", "Okänd").replace("—", "-")
@@ -205,7 +203,7 @@ def _html_entry(ad: dict, data_tags: str, cat_label: str) -> str:
     loc_tag = (
         '<span class="tag tag-remote">Remote</span>'
         if is_remote
-        else '<span class="tag tag-gbg">Göteborg</span>'
+        else f'<span class="tag tag-gbg">{default_city}</span>'
     )
     cat_class = "tag-komm" if "komm" in data_tags else "tag-tech"
     description = f"{employer} - {city}" if city else employer
@@ -226,11 +224,11 @@ def _html_entry(ad: dict, data_tags: str, cat_label: str) -> str:
     )
 
 
-def _pipeline_md_entry(ad: dict) -> str:
+def _pipeline_md_entry(ad: dict, default_city: str) -> str:
     headline = ad.get("headline", "Utan rubrik")
     employer = ad.get("employer", {}).get("name", "Okänd")
     wp = ad.get("workplace_address", {}) or {}
-    city = wp.get("city", "") or wp.get("municipality", "Göteborg")
+    city = wp.get("city", "") or wp.get("municipality", default_city)
     ad_id = ad.get("id", "")
     url = f"https://arbetsformedlingen.se/platsbanken/annonser/{ad_id}"
     return f"- [ ] {url} | {employer} | {headline} ({city})"
@@ -257,13 +255,17 @@ async def main(days: int, dry_run: bool, no_filter: bool) -> None:
     if dry_run:
         print("  [DRY RUN — skriver inga filer]")
 
+    config = _load_portals_config()
+    municipality_default, default_city, searches = _load_platsbanken_config(config)
+    print(f"  {len(searches)} sökningar konfigurerade, default-ort: {default_city}")
+
     # Ladda titelfilter
     if no_filter:
         positive_filters: list[re.Pattern] = []
         negative_filters: list[re.Pattern] = []
         print("  [--no-filter: titelfiltrering avstängd]")
     else:
-        positive_filters, negative_filters = _load_title_filters()
+        positive_filters, negative_filters = _load_title_filters(config)
         if positive_filters:
             print(f"  Titelfilter: {len(positive_filters)} positiva, {len(negative_filters)} negativa termer")
     print()
@@ -273,10 +275,13 @@ async def main(days: int, dry_run: bool, no_filter: bool) -> None:
 
     # Kör alla sökningar
     all_hits: dict[str, dict] = {}          # ad_id -> ad
-    id_to_search: dict[str, tuple[str, bool | None]] = {}
+    id_to_search: dict[str, dict] = {}      # ad_id -> searches-post (för taggning)
 
-    for q, municipality, remote in SEARCHES:
-        label_loc = " (remote)" if remote else " (Gbg)" if municipality else " (Sverige)"
+    for search in searches:
+        q = search["q"]
+        municipality = search.get("municipality", municipality_default)
+        remote = search.get("remote")
+        label_loc = " (remote)" if remote else f" ({default_city})" if municipality else " (Sverige)"
         print(f"  🔎 '{q}'{label_loc}...")
         hits = await _search(q, municipality, remote, published_after)
         new_here = 0
@@ -290,7 +295,7 @@ async def main(days: int, dry_run: bool, no_filter: bool) -> None:
                 filtered_out += 1
                 continue
             all_hits[ad_id] = ad
-            id_to_search[ad_id] = (q, remote)
+            id_to_search[ad_id] = search
             new_here += 1
         filter_note = f", {filtered_out} filtrerade" if filtered_out else ""
         print(f"    → {len(hits)} träffar, {new_here} nya{filter_note}")
@@ -337,7 +342,10 @@ async def main(days: int, dry_run: bool, no_filter: bool) -> None:
     print(f"✅ scan-history.tsv — {n} rader tillagda")
 
     # --- Uppdatera pipeline.md ---
-    md_lines = [_pipeline_md_entry(ad) for ad in all_hits.values()]
+    if not PIPELINE_MD.exists():
+        print(f"❌ {PIPELINE_MD.relative_to(ROOT)} saknas. {INIT_HINT}", file=sys.stderr)
+        sys.exit(1)
+    md_lines = [_pipeline_md_entry(ad, default_city) for ad in all_hits.values()]
     md = PIPELINE_MD.read_text(encoding="utf-8")
     marker = "## Pendientes\n"
     idx = md.find(marker)
@@ -350,8 +358,11 @@ async def main(days: int, dry_run: bool, no_filter: bool) -> None:
     print(f"✅ pipeline.md — {n} jobb tillagda")
 
     # --- Uppdatera pipeline.html ---
+    if not PIPELINE_HTML.exists():
+        print(f"❌ {PIPELINE_HTML.relative_to(ROOT)} saknas. {INIT_HINT}", file=sys.stderr)
+        sys.exit(1)
     html_entries = "".join(
-        _html_entry(ad, *_tags_for_query(*id_to_search[ad_id]))
+        _html_entry(ad, *_tags_for_search(id_to_search[ad_id], default_city), default_city)
         for ad_id, ad in all_hits.items()
     )
     from pipeline_lib import (backup_pipeline, count_jobs, insert_new_jobs,

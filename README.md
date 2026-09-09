@@ -1,4 +1,4 @@
-# letajobb
+# Hittajobb
 
 AI-assisterad jobbsökning med pipeline-tänk. Byggt för att hålla koll på ett brett jobbsök utan att tappa bort sig i ett kaos av flikar och bokmärken.
 
@@ -14,7 +14,7 @@ Det här var ursprungligen mitt eget, faktiska jobbsök — inte ett demoprojekt
 
 ## Hur det fungerar
 
-**Skanning:** Söker igenom LinkedIn, Platsbanken, Indeed, Greenhouse, Ashby, Lever, Teamtailor och Workable efter roller som matchar. Portaler och sökfrågor konfigureras per användare i `career-ops/portals.yml` (kopiera från `career-ops/templates/portals.example.yml`).
+**Skanning:** Söker igenom LinkedIn, Platsbanken, Indeed, Greenhouse, Ashby, Lever, Teamtailor och Workable efter roller som matchar. Portaler och sökfrågor konfigureras per användare i `career-ops/portals.yml` (kopiera från `career-ops/templates/portals.svenska.example.yml` — inte `templates/portals.example.yml`, som är upstreams engelska AI/ML-mall och inte matchar Platsbanken-skannern).
 
 **Pipeline:** Alla hittade jobb hamnar i din egen `pipeline.html` — en dark-mode dashboard med filter för kategori, plats, status och urgency. Varje jobb taggas (tech/komm, ort/remote, ny/utvärderad/utgången) och kan klickas igenom till originalannonsen. Den här filen är gitignored eftersom den innehåller din faktiska sökdata — se `pipeline.example.html` för hur formatet ser ut i praktiken.
 
@@ -23,23 +23,28 @@ Det här var ursprungligen mitt eget, faktiska jobbsök — inte ett demoprojekt
 ## Struktur
 
 ```
-letajobb/
+hittajobb/
 ├── pipeline.example.html          # Exempel på pipeline-formatet (committed)
 ├── pipeline.html                  # Din egen jobbpipeline (gitignored, genereras lokalt)
 ├── reports/                       # Utvärderingsrapporter (gitignored)
 ├── CLAUDE.md                      # AI-instruktioner för projektet — börja här
+├── ONBOARDING.md                  # Intervjuprotokoll AI:n följer vid första körningen
 ├── LICENSE                        # MIT
 ├── .gitignore
 ├── af-mcp/                        # Platsbanken-scanner (MCP-server) + säkerhetslager för pipeline.html
 │   ├── server.py                  # MCP-server mot JobTech API
 │   ├── scan.py                    # Batch-scanner med titelfiltrering
+│   ├── init.py                    # Bootstrap: skapar pipeline.html + datafiler för en ny installation
 │   ├── pipeline_lib.py            # Backup, atomisk skrivning, verifiering, räknarsynk
 │   └── verify.py                  # Fristående strukturkontroll av pipeline.html
 └── career-ops/                    # Pipeline-motor (fork av santifer/career-ops)
+    ├── .claude/skills/career-ops/ # /career-ops-skillen (committed sedan denna mall städades)
     ├── config/
     │   ├── profile.yml            # Din kandidatprofil (gitignored — persondata)
     │   └── profile.example.yml    # Exempelprofil, kopiera och fyll i
     ├── portals.yml                # Sökfrågor och bevakade företag (gitignored)
+    ├── templates/
+    │   └── portals.svenska.example.yml  # Svensk mall som matchar af-mcp/scan.py
     ├── data/                      # Ansökningsstatus, pipeline-inbox (gitignored)
     ├── reports/                   # Utvärderingsrapporter i markdown (gitignored)
     ├── interview-prep/            # STAR-historier och interviewprep (gitignored)
@@ -49,11 +54,22 @@ letajobb/
 
 ## Kom igång
 
+Förutsättningar: Python 3.10+, Node.js 18+, git.
+
 1. Klona repot
-2. Kör `/career-ops` i Claude Code (eller motsvarande) — den guidar dig genom onboarding: CV, profil, portaler
-3. Läs `CLAUDE.md` — projektinstruktionerna beskriver hur pipeline.html, rapporter och säkerhetslagret hänger ihop
-4. Fyll i din egen `career-ops/config/profile.yml` utifrån `profile.example.yml`
-5. Kör `python af-mcp/scan.py --dry-run` för att testa Platsbanken-scannern utan att skriva filer
+2. `pip install -r af-mcp/requirements.txt`
+3. `npm install --prefix career-ops && npx playwright install chromium`
+4. `python af-mcp/init.py` — bygger en tom `pipeline.html` och de datafiler
+   career-ops/af-mcp behöver (rör aldrig en fil som redan finns)
+5. Öppna mappen i Claude Code eller Cowork och skriv t.ex. "starta jobbsöket"
+   — AI:n läser `ONBOARDING.md`, intervjuar dig om målroller, geografi,
+   sekretess och skrivstil, och fyller i din profil åt dig. I Claude Code
+   kan du också köra `/starta-jobbsok` direkt.
+6. Testa scannern: `python af-mcp/scan.py --dry-run --days 14`
+
+Cowork-not: samma flöde fungerar i Cowork som i Claude Code — AI:n läser
+`CLAUDE.md`/`AGENTS.md` automatiskt och hittar `ONBOARDING.md` därifrån, det
+finns ingen Cowork-specifik variant att installera.
 
 ## Vad som skiljer den här forken
 

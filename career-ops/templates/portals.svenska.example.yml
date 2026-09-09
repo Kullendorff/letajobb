@@ -1,0 +1,123 @@
+# Portal Scanner Configuration — svensk mall
+#
+# Används av TVÅ skannrar:
+#   1. career-ops/.claude/skills/career-ops (scan-läget) — läser hela filen:
+#      title_filter, search_queries, tracked_companies.
+#   2. af-mcp/scan.py (Platsbanken-batchskannern) — läser bara title_filter
+#      + det nya platsbanken:-blocket nedan. Sökfrågorna i platsbanken.searches
+#      MOTSVARAR search_queries för career-ops men i ett enklare format
+#      (Platsbankens eget API tar en fritextterm + kommunkod, inte en
+#      Google-site:-sökning).
+#
+# HUR DU ANPASSAR:
+#   1. Kopiera den här filen till career-ops/portals.yml (eller kör
+#      python af-mcp/init.py, som gör det åt dig om filen saknas)
+#   2. Byt ut title_filter.positive/negative mot DINA målroller
+#   3. Fyll i platsbanken.municipality/default_city med DIN ort
+#      (slå upp kommunkod med af-mcp/server.py:s sok_taxonomy-verktyg,
+#      eller lämna tom sträng "" för Sverige-brett)
+#   4. Byt ut platsbanken.searches mot DINA söktermer
+#   5. Byt ut/lägg till tracked_companies för career-ops-skannern
+#
+# Exemplen nedan är påhittade och täcker två breda spår (IT-support och
+# kommunikation) bara för att visa formatet — ta bort det som inte gäller dig.
+
+# -- Titelfilter --
+# Används av BÅDA skannrarna. Minst 1 positive måste matcha titeln,
+# 0 negative får matcha (versal/gemen spelar ingen roll).
+
+title_filter:
+  positive:
+    # [ANPASSA] Dina målroller — exempel nedan, byt ut helt
+    - "IT-support"
+    - "IT Support"
+    - "Supporttekniker"
+    - "Support Specialist"
+    - "Service Desk"
+    - "Helpdesk"
+    - "Systemadministratör"
+    - "Kommunikatör"
+    - "Webbredaktör"
+    - "Content Manager"
+  negative:
+    # [ANPASSA] Roller/stackar du INTE vill se — exempel nedan
+    - "Senior Developer"
+    - "Principal"
+    - "CTO"
+    - "Java "
+    - ".NET"
+  seniority_boost:
+    # Höjer relevans men är inget krav
+    - "Senior"
+    - "Lead"
+    - "Specialist"
+
+# -- Platsbanken-skannern (af-mcp/scan.py) --
+# Sverige-specifikt: söker mot Arbetsförmedlingens JobTech-API.
+# municipality = kommunkod, "" = hela Sverige. Slå upp koder med
+# af-mcp/server.py:s sok_taxonomy-verktyg (query="Din ort").
+
+platsbanken:
+  municipality: "1480"      # [ANPASSA] "1480" = Göteborg, exempel — byt ut
+  default_city: "Din ort"   # [ANPASSA] fallback-ort i jobbkort när annonsen saknar ort
+  searches:
+    # [ANPASSA] varje post: q = sökterm, municipality = "" för Sverige-brett
+    # eller en kommunkod, remote = null/true, category styr taggfärgen
+    # (bara tech/komm finns som CSS-klasser i pipeline.html — allt annat
+    # faller tillbaka på tech-färgen). Valfri label: byter den synliga
+    # texten på taggen, t.ex. "Python" istället för generiska "Tech".
+    - q: "IT-support"
+      municipality: "1480"
+      remote: null
+      category: tech
+    - q: "supporttekniker"
+      municipality: "1480"
+      remote: null
+      category: tech
+    - q: "helpdesk"
+      municipality: "1480"
+      remote: null
+      category: tech
+    - q: "kommunikatör"
+      municipality: "1480"
+      remote: null
+      category: komm
+    - q: "webbredaktör"
+      municipality: "1480"
+      remote: null
+      category: komm
+    - q: "support specialist"
+      municipality: ""
+      remote: true
+      category: tech
+
+# -- Sökfrågor för career-ops-skannern (Playwright/WebSearch) --
+# Samma söksyfte som ovan men mot Google site:-sökningar. Behövs bara om
+# du kör /career-ops scan (inte om du bara kör af-mcp/scan.py).
+
+search_queries:
+  - name: LinkedIn — IT-support
+    query: 'site:linkedin.com/jobs "IT support" OR "Technical Support" OR "Supporttekniker" [Din ort]'
+    enabled: true
+
+  - name: Indeed — Kommunikatör
+    query: 'site:se.indeed.com "kommunikatör" OR "webbredaktör" OR "content" [Din ort]'
+    enabled: true
+
+  - name: Platsbanken — IT-support
+    query: 'site:arbetsformedlingen.se "IT-support" OR "Supporttekniker" [Din ort]'
+    enabled: true
+
+# -- Bevakade företag --
+# Företag vars karriärsidor kollas direkt. scan_method: playwright (default),
+# websearch, greenhouse_api. Greenhouse-bolag: lägg till api: för snabbare
+# strukturerad JSON.
+
+tracked_companies:
+  # [ANPASSA] Byt ut mot företag du bevakar. Exempel:
+  - name: Exempel AB
+    careers_url: https://exempel.se/karriar
+    scan_method: websearch
+    scan_query: 'site:exempel.se/karriar "support" OR "IT"'
+    notes: "[Din ort]. Exempelpost — byt ut eller ta bort."
+    enabled: true

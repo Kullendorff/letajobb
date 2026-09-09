@@ -7,7 +7,7 @@ career-ops/node_modules/
 career-ops/config/profile.yml
 
 # Context file (personnummer, fullständig historik)
-career-ops/johan_kontext_claude_code.md
+career-ops/*_kontext_claude_code.md
 
 # CV-filer (alla format - PDF, DOCX)
 career-ops/cv.md
@@ -30,7 +30,8 @@ career-ops/data/pipeline.html
 CLAUDE.local.md
 
 # Personliga brev/CV i alla format (fångar även .txt)
-Johan_Kullendorff_*
+*_CV_*
+*_Brev_*
 
 # Din riktiga jobbpipeline (persondata) - se pipeline.example.html för formatet
 pipeline.html
@@ -46,11 +47,9 @@ update_pipeline.py
 # HTML-rapporter (persondata - hela mappen ignoreras)
 reports/
 
-# Lokala Claude Code-inställningar
-.claude/
-
-# Codex/Agents-variant av CLAUDE.md (kan innehålla samma persondata)
-AGENTS.md
+# Lokala Claude Code-inställningar (skills committas, bara lokala settings ignoreras)
+/.claude/settings.local.json
+career-ops/.claude/settings.local.json
 
 # Python cache
 __pycache__/
