@@ -20,6 +20,8 @@ Det här var ursprungligen mitt eget, faktiska jobbsök — inte ett demoprojekt
 
 **Utvärdering:** Intressanta jobb utvärderas mot din kandidatprofil och får en rapport med scorecard, gap-analys, STAR-historier, personligt brev-utkast och ATS-keywords. Rapporterna genereras som HTML med mörkt tema och länkas direkt från pipeline-vyn. Även rapporter är gitignored (`reports/`) — de innehåller kontaktuppgifter och detaljer om din faktiska sökning.
 
+**CV-generering:** Projektet bygger också ett skräddarsytt CV per jobb du söker, inte bara ett generellt CV du återanvänder. Utgångspunkten är `career-ops/cv.md` + din profil, och `/career-ops pdf` genererar HTML+PDF via Playwright (`career-ops/generate-pdf.mjs`) där titel, profiltext och några kompetensrader justeras efter annonsens ordval. Funkar även manuellt som .docx om du föredrar det.
+
 ## Struktur
 
 ```
